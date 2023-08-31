@@ -59,16 +59,15 @@ def booking():
 def thankyou():
   return render_template("thankyou.html")
 
-
-# 模糊比對景點名稱的關鍵字
-def find_attraction(keyword, page):
+# 完全比對捷運站名稱 or 模糊比對景點名稱的關鍵字
+def find_mrt_or_attraction(keyword, page):
   conn, cursor = getConn()
-  params = ("%" + keyword + "%")
-  cursor.execute("SELECT COUNT(*) FROM attractions WHERE name LIKE %s", (params, ))
+  params = (keyword, "%" + keyword + "%")
+  cursor.execute("SELECT COUNT(*) FROM attractions WHERE mrt = %s OR name LIKE %s", params )
   resultsNum = cursor.fetchone()[0]
-  query = "SELECT * FROM attractions WHERE name LIKE %s"
+  query = "SELECT * FROM attractions WHERE mrt = %s OR name LIKE %s"
   offset = max((page - 1) * 12, 0)
-  cursor.execute(query + " LIMIT 12 OFFSET %s", (params, offset,))
+  cursor.execute(query + " LIMIT 12 OFFSET %s", params + (offset,))
   results = cursor.fetchall()
   dispose(cursor, conn)
   return results , resultsNum
@@ -81,12 +80,12 @@ def api_attractions():
     keyword = request.args.get('keyword', '')
     
     if keyword:
-      results, resultsNum = find_attraction(keyword, page)
+      results, resultsNum = find_mrt_or_attraction(keyword, page)
     else:
       conn, cursor = getConn()
       cursor.execute("SELECT COUNT(*) FROM attractions")
       resultsNum = cursor.fetchone()[0]
-      offset = max((page - 1) * 12, 0)
+      offset = page * 12
       cursor.execute("SELECT * FROM attractions LIMIT 12 OFFSET %s", (offset,))
       results = cursor.fetchall()
       dispose(cursor, conn)
@@ -107,8 +106,8 @@ def api_attractions():
       }
       attractions_data.append(attraction)
 
-    if page * 12 <= resultsNum:
-      next_page = round(resultsNum / 12) - page
+    if (page + 1) * 12 < resultsNum:
+      next_page = page + 1
     else:
       next_page = None
 
