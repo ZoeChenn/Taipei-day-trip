@@ -66,7 +66,7 @@ def find_mrt_or_attraction(keyword, page):
   cursor.execute("SELECT COUNT(*) FROM attractions WHERE mrt = %s OR name LIKE %s", params )
   resultsNum = cursor.fetchone()[0]
   query = "SELECT * FROM attractions WHERE mrt = %s OR name LIKE %s"
-  offset = max((page - 1) * 12, 0)
+  offset = page * 12
   cursor.execute(query + " LIMIT 12 OFFSET %s", params + (offset,))
   results = cursor.fetchall()
   dispose(cursor, conn)
@@ -76,7 +76,7 @@ def find_mrt_or_attraction(keyword, page):
 @app.route("/api/attractions", methods=['GET'])
 def api_attractions():
   try:
-    page = int(request.args.get('page', 1))
+    page = int(request.args.get('page', 0))
     keyword = request.args.get('keyword', '')
     
     if keyword:
