@@ -2,6 +2,13 @@ let allData;
 let nextPage = 0;
 let keyword = '';
 let isLoading = false;
+const searchInput = document.querySelector('.search_input');
+const searchButton = document.querySelector('.search_btn');
+const contentCards = document.querySelector('.content_cards');
+const mrtList = document.querySelector('.mrtBar_list');
+const mrtBtnLeft = document.querySelector('.mrtBar_btn-left');
+const mrtBtnRight = document.querySelector('.mrtBar_btn-right');
+const scrollOffset = 800;
 
 // mrtBar 列表
 fetch('/api/mrts')
@@ -75,6 +82,7 @@ function searchDataAPI(page, keyword) {
         return;
       } else {
         renderData(keyData);
+        isLoading = false;
       }
     })
     .catch(error => {
@@ -134,50 +142,49 @@ function renderData(data) {
 
 // 渲染捷運列表函式
 function renderMrt(data) {
-  const mrtbarList = document.querySelector(".mrtbar_list");
+  const mrtBarList = document.querySelector(".mrtBar_list");
 
   data.forEach( mrt => {
     const mrtLi = document.createElement("li");
 
     const liA = document.createElement("a");
+    const mrtName = encodeURIComponent(mrt); // 將站名編碼，防止特殊字符引起的問題
+    liA.setAttribute('href', `javascript:void(0);`);
     liA.textContent = mrt;
     
+    // 捷運站連結的監聽事件
+    liA.addEventListener('click', () => {
+      searchInput.value = decodeURIComponent(mrtName); // 解碼以顯示原始捷運站名稱
+      searchButton.click();
+    });
+
     // 將 liA 成為 mrtLi 的子層
     mrtLi.appendChild(liA);
 
-    // 將 mrtLi 成為 mrtbarList 的子層
-    mrtbarList.appendChild(mrtLi);
+    // 將 mrtLi 成為 mrtBarList 的子層
+    mrtBarList.appendChild(mrtLi);
   });
 }
 
-
-const mrtList = document.querySelector('.mrtbar_list');
-const mrtBtnLeft = document.querySelector('.mrtbar_btn-left');
-const mrtBtnRight = document.querySelector('.mrtbar_btn-right');
-const scrollOffset = 1100;
-
+// mrtBtn 按鈕設置
 mrtBtnLeft.addEventListener('click', () => {
-  mrtList.scrollTo({
-    left: mrtList.scrollLeft + scrollOffset,
-    behavior: 'smooth'
-  });
-});
-
-mrtBtnRight.addEventListener('click', () => {
   mrtList.scrollTo({
     left: mrtList.scrollLeft - scrollOffset,
     behavior: 'smooth'
   });
 });
 
-
-const searchInput = document.querySelector('.search_input');
-const searchButton = document.querySelector('.search_btn');
-const contentCards = document.querySelector('.content_cards');
+mrtBtnRight.addEventListener('click', () => {
+  mrtList.scrollTo({
+    left: mrtList.scrollLeft + scrollOffset,
+    behavior: 'smooth'
+  });
+});
 
 // 輸入關鍵字查詢
 searchButton.addEventListener('click', () => {
   nextPage = 0;
+  isLoading = true;
   keyword = searchInput.value.trim();
   if (keyword === '') {
     return
