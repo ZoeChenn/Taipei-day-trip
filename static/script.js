@@ -2,6 +2,7 @@ let allData;
 let nextPage = 0;
 let keyword = '';
 let isLoading = false;
+let currentRequest = null;
 const searchInput = document.querySelector('.search_input');
 const searchButton = document.querySelector('.search_btn');
 const contentCards = document.querySelector('.content_cards');
@@ -48,6 +49,10 @@ const observer = new IntersectionObserver(async (entries) => {
       isLoading = false;
     }
   });
+  setTimeout(() => {
+    isLoading = false;
+  }, 1000);
+
 }, options);
 
 const detective = document.getElementById('js-detective');
@@ -55,28 +60,35 @@ observer.observe(detective);
 
 // 首頁資料
 function homeDataAPI(page) {
-  fetch(`/api/attractions?page=${page}`)
-  .then(response => response.json())
-  .then(data => {
-      allData = data.data;
-      nextPage = data.nextPage;
-      console.log('homeDataAPI 更新的下一頁:'+ nextPage);
-      renderData(allData);
-  })
-  .catch(function(error){
-      console.log("發生錯誤" + error);
-  });
+  if (currentRequest) return;
+  currentRequest = fetch(`/api/attractions?page=${page}`)
+  currentRequest
+    .then(response => response.json())
+    .then(data => {
+        allData = data.data;
+        nextPage = data.nextPage;
+        // console.log('homeDataAPI 更新的下一頁:'+ nextPage);
+        renderData(allData);
+    })
+    .catch(function(error){
+        console.log("發生錯誤" + error);
+    })
+    .finally(() => {
+      currentRequest = null;
+    });
 }
 
 // 關鍵字搜尋功能
 function searchDataAPI(page, keyword) {
-  fetch(`/api/attractions?page=${page}&keyword=${keyword}`)
+  if (currentRequest) return;
+  currentRequest = fetch(`/api/attractions?page=${page}&keyword=${keyword}`)
+  currentRequest
     .then(response => response.json())
     .then(data => {
       keyData = data.data;
       nextPage = data.nextPage;
-      console.log('searchDataAPI 更新的下一頁:'+ nextPage);
-      console.log('keyData 長度:'+ keyData.length);
+      // console.log('searchDataAPI 更新的下一頁:'+ nextPage);
+      // console.log('keyData 長度:'+ keyData.length);
       if (keyData.length === 0) {
         contentCards.innerHTML = '沒有相關結果';
         return;
@@ -87,13 +99,16 @@ function searchDataAPI(page, keyword) {
     })
     .catch(error => {
       console.error("獲取下一頁資訊時發生錯誤:" + error);
+    })
+    .finally(() => {
+      currentRequest = null;
     });
 }
 
 // 渲染卡片函式
 function renderData(data) {
   const contentCards = document.querySelector(".content_cards");
-  console.log('卡片渲染中')
+  // console.log('卡片渲染中')
   data.forEach( attraction => {
     const cardsCard = document.createElement("div");
     cardsCard.classList.add("cards_card");
