@@ -49,10 +49,6 @@ const observer = new IntersectionObserver(async (entries) => {
       isLoading = false;
     }
   });
-  setTimeout(() => {
-    isLoading = false;
-  }, 1000);
-
 }, options);
 
 const detective = document.getElementById('js-detective');
@@ -67,7 +63,6 @@ function homeDataAPI(page) {
     .then(data => {
         allData = data.data;
         nextPage = data.nextPage;
-        // console.log('homeDataAPI 更新的下一頁:'+ nextPage);
         renderData(allData);
     })
     .catch(function(error){
@@ -87,8 +82,6 @@ function searchDataAPI(page, keyword) {
     .then(data => {
       keyData = data.data;
       nextPage = data.nextPage;
-      // console.log('searchDataAPI 更新的下一頁:'+ nextPage);
-      // console.log('keyData 長度:'+ keyData.length);
       if (keyData.length === 0) {
         contentCards.innerHTML = '沒有相關結果';
         return;
@@ -108,7 +101,6 @@ function searchDataAPI(page, keyword) {
 // 渲染卡片函式
 function renderData(data) {
   const contentCards = document.querySelector(".content_cards");
-  // console.log('卡片渲染中')
   data.forEach( attraction => {
     const cardsCard = document.createElement("div");
     cardsCard.classList.add("cards_card");

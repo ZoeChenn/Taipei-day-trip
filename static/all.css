@@ -84,7 +84,7 @@ nav .navWarp {
     width: 90%;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   nav .navWarp {
     width: 95%;
   }
@@ -127,7 +127,7 @@ nav .navWarp .nav_menu a {
     width: 90%;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .banner .banner_content {
     width: 90%;
   }
@@ -158,7 +158,7 @@ nav .navWarp .nav_menu a {
   align-items: center;
   border-radius: 5px 0 0 5px;
 }
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .banner .search_input {
     width: 80%;
   }
@@ -174,7 +174,7 @@ nav .navWarp .nav_menu a {
   cursor: pointer;
   background-color: #346976;
 }
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .banner .search_btn {
     width: 20%;
   }
@@ -252,7 +252,7 @@ main .content_cards {
     gap: 10px;
   }
 }
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   main .content_cards {
     width: 90%;
   }
@@ -267,7 +267,7 @@ main .content_cards .cards_card {
 main .content_cards .cards_card:hover {
   opacity: 0.7;
 }
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   main .content_cards .cards_card {
     width: 100%;
   }
