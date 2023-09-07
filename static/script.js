@@ -3,64 +3,7 @@ let nextPage = 0;
 let keyword = '';
 let isLoading = false;
 
-function initIntersectionObserver() {
-  document.addEventListener('DOMContentLoaded', () => {
-    const options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.6,
-    };
-  
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && !isLoading) {
-          isLoading = true;
-          allData = [];
-  
-          setTimeout(() => {
-            try {
-              const newDataPromise = getNextPageData(nextPage);
-              newDataPromise
-                .then((newData) => {
-                  console.log(newData);
-                  if (newData.length > 0) {
-                    allData = [...allData, ...newData];
-                    renderData(newData);
-                    nextPage++;
-                  } else {
-                    return;
-                  }
-                  isLoading = false;
-                })
-            } catch (error) {
-              console.error("獲取下一頁資料時發生錯誤：" + error);
-              isLoading = false;
-            }
-          }, 1000);
-        }
-      });
-    }, options);
-  
-    const footer = document.querySelector('footer');
-    observer.observe(footer);
-  });
-}
-
-fetch(`/api/attractions?page=${nextPage}`)
-.then(response => response.json())
-.then(data => {
-    allData = data.data;
-    nextPage = data.nextPage;
-    console.log(nextPage);
-    renderData(allData);
-    getNextPageInfo();
-})
-.catch(function(error){
-    console.log("發生錯誤" + error);
-});
-
-initIntersectionObserver();
-
+// mrtBar 列表
 fetch('/api/mrts')
 .then(response => response.json())
 .then(data => {
@@ -70,6 +13,74 @@ fetch('/api/mrts')
 .catch(function(error){
     console.log("發生錯誤" + error);
 });
+
+// 觀測器
+const options = {
+  root: null,
+  rootMargin: '0px',
+  threshold: 0.6,
+};
+
+const observer = new IntersectionObserver(async (entries) => {
+  entries.forEach(async (entry) => {
+    if (entry.isIntersecting && !isLoading) {
+      isLoading = true;
+      if (!keyword) {
+        if (nextPage !== null) {
+          await homeDataAPI(nextPage);
+        } else {
+          return
+        }
+      } else {
+        if (nextPage !== null) {
+          await searchDataAPI(nextPage, keyword);
+        } else {
+          return
+        }
+      }
+      isLoading = false;
+    }
+  });
+}, options);
+
+const detective = document.getElementById('js-detective');
+observer.observe(detective);
+
+// 首頁資料
+function homeDataAPI(page) {
+  fetch(`/api/attractions?page=${page}`)
+  .then(response => response.json())
+  .then(data => {
+      allData = data.data;
+      nextPage = data.nextPage;
+      console.log('homeDataAPI 更新的下一頁:'+ nextPage);
+      renderData(allData);
+  })
+  .catch(function(error){
+      console.log("發生錯誤" + error);
+  });
+}
+
+// 關鍵字搜尋功能
+function searchDataAPI(page, keyword) {
+  fetch(`/api/attractions?page=${page}&keyword=${keyword}`)
+    .then(response => response.json())
+    .then(data => {
+      keyData = data.data;
+      nextPage = data.nextPage;
+      console.log('searchDataAPI 更新的下一頁:'+ nextPage);
+      console.log('keyData 長度:'+ keyData.length);
+      if (keyData.length === 0) {
+        contentCards.innerHTML = '沒有相關結果';
+        return;
+      } else {
+        renderData(keyData);
+      }
+    })
+    .catch(error => {
+      console.error("獲取下一頁資訊時發生錯誤:" + error);
+    });
+}
 
 // 渲染卡片函式
 function renderData(data) {
@@ -139,6 +150,7 @@ function renderMrt(data) {
   });
 }
 
+
 const mrtList = document.querySelector('.mrtbar_list');
 const mrtBtnLeft = document.querySelector('.mrtbar_btn-left');
 const mrtBtnRight = document.querySelector('.mrtbar_btn-right');
@@ -158,110 +170,18 @@ mrtBtnRight.addEventListener('click', () => {
   });
 });
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   const options = {
-//     root: null, // 根元素，預設為 viewport
-//     rootMargin: '0px',
-//     threshold: 0.5, // 當見到目標元素 50% 時觸發
-//   };
-
-//   const observer = new IntersectionObserver((entries) => {
-//     entries.forEach((entry) => {
-//       if (entry.isIntersecting && !isLoading) {
-//         isLoading = true;
-//         allData = [];
-
-//         setTimeout(() => {
-//           try {
-//             const newDataPromise = getNextPageData(nextPage);
-//             newDataPromise
-//               .then((newData) => {
-//                 console.log(newData);
-//                 if (newData.length > 0) {
-//                   allData = [...allData, ...newData];
-//                   renderData(newData);
-//                   nextPage++;
-//                 } else {
-//                   return;
-//                 }
-//                 isLoading = false;
-//               })
-//           } catch (error) {
-//             console.error("獲取下一頁資料時發生錯誤：" + error);
-//             isLoading = false;
-//           }
-//         }, 1000);
-//       }
-//     });
-//   }, options);
-
-//   const footer = document.querySelector('footer');
-//   observer.observe(footer);
-// });
-
-// 獲得下一頁
-function getNextPageData() {
-  const nextPageInfo = getNextPageInfo(nextPage);
-  console.log('有進getNextPageData判斷')
-  console.log(nextPageInfo)
-  if (!nextPageInfo) {
-    // return [];
-    return Promise.resolve([]);
-  }
-
-  return fetch(`/api/attractions?page=${nextPageInfo}`)
-    .then(response => response.json())
-    .then(data => {
-      return data.data;
-    })
-    .catch(error => {
-      console.error("獲取下一頁資訊時發生錯誤：" + error);
-      return [];
-    });
-}
-
-// 判斷是否有下一頁
-function getNextPageInfo(nextPage) {
-  if (nextPage !== null) {
-    return nextPage;
-  } else {
-    return null;
-  }
-}
 
 const searchInput = document.querySelector('.search_input');
 const searchButton = document.querySelector('.search_btn');
 const contentCards = document.querySelector('.content_cards');
 
 // 輸入關鍵字查詢
-searchButton.addEventListener('click', async (e) => {
-  const keyword = searchInput.value.trim();
+searchButton.addEventListener('click', () => {
   nextPage = 0;
+  keyword = searchInput.value.trim();
   if (keyword === '') {
     return
   }
-  
-  try {
-    const response = await fetch(`/api/attractions?page=${nextPage}&keyword=${keyword}`);
-    const data = await response.json();
-    let KeyData = data.data;
-    
-    if (KeyData.length === 0) {
-      contentCards.innerHTML = '沒有相關結果';
-      return;
-    }
-    
-    contentCards.innerHTML = '';
-    renderData(KeyData);
-    
-    const hasNextPage = data.hasNextPage;
-    
-    if (hasNextPage) {
-      nextPage++;
-      initializeIntersectionObserver();
-    }
-    
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+  contentCards.innerHTML = '';
+  searchDataAPI(nextPage, keyword)
 });
