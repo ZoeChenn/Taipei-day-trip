@@ -16,7 +16,7 @@ if (attractionId) {
   })
   .then((data) => {
     images = data.data.images;
-    console.log(images.length)
+    // console.log(images.length)
     renderAttractionDetail(data);
     updateSlide();
   })
@@ -67,8 +67,8 @@ const nextBtn = document.querySelector(".next");
 const dotsContainer = document.querySelector(".dots");
 
 function updateSlide() {
-  console.log(images[currentImageIndex])
-  console.log(currentImageIndex)
+  // console.log(images[currentImageIndex])
+  // console.log(currentImageIndex)
   imgSlide.src = images[currentImageIndex];
   updateDots();
 }
@@ -110,5 +110,3 @@ dotsContainer.addEventListener("click", (e) => {
     updateSlide();
   }
 });
-
-updateSlide();

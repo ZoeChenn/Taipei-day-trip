@@ -36,8 +36,8 @@ const observer = new IntersectionObserver(async (entries) => {
       isLoading = true;
       if (!keyword) {
         if (nextPage !== null) {
-          console.log('有進入')
-          console.log(nextPage)
+          // console.log('有進入')
+          // console.log(nextPage)
           await homeDataAPI(nextPage);
         } else {
           return
@@ -66,7 +66,7 @@ function homeDataAPI(page) {
     .then(data => {
         allData = data.data;
         nextPage = data.nextPage;
-        console.log('homeAPI:',nextPage)
+        // console.log('homeAPI:',nextPage)
         renderData(allData);
     })
     .catch(function(error){
