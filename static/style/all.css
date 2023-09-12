@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* http://meyerweb.com/eric/tools/css/reset/ 
   v2.0 | 20110126
   License: none (public domain)
@@ -30,7 +31,8 @@ footer, header, hgroup, menu, nav, section {
 }
 
 body {
-  line-height: 1;
+  line-height: 1.3;
+  font-family: Noto Sans TC;
 }
 
 ol, ul {
@@ -69,6 +71,7 @@ nav {
   top: 0;
   left: 0;
   right: 0;
+  border-bottom: 1px solid #E8E8E8;
 }
 nav .navWarp {
   max-width: 1200px;
@@ -82,11 +85,6 @@ nav .navWarp {
 @media (max-width: 1200px) {
   nav .navWarp {
     width: 90%;
-  }
-}
-@media (max-width: 600px) {
-  nav .navWarp {
-    width: 95%;
   }
 }
 nav .navWarp .nav_logo {
@@ -123,11 +121,6 @@ nav .navWarp .nav_menu a {
   padding: 85px 0;
 }
 @media (max-width: 1200px) {
-  .banner .banner_content {
-    width: 90%;
-  }
-}
-@media (max-width: 600px) {
   .banner .banner_content {
     width: 90%;
   }
@@ -249,16 +242,11 @@ main .content_cards {
 @media (max-width: 1200px) {
   main .content_cards {
     width: 90%;
-    gap: 10px;
-  }
-}
-@media (max-width: 600px) {
-  main .content_cards {
-    width: 90%;
   }
 }
 main .content_cards .cards_card {
   width: 23%;
+  width: calc((100% - 90px) / 4); /* 扣掉 Gap 30px 三份的長度後除四 */
   border-radius: 5px;
   border: 1px solid #E8E8E8;
   position: relative;
@@ -267,10 +255,23 @@ main .content_cards .cards_card {
 main .content_cards .cards_card:hover {
   opacity: 0.7;
 }
+@media (max-width: 1200px) {
+  main .content_cards .cards_card {
+    width: calc((100% - 60px) / 3); /* 扣掉 Gap 30px 兩份的長度後除三 */
+  }
+}
+@media (max-width: 900px) {
+  main .content_cards .cards_card {
+    width: calc((100% - 30px) / 2); /* 扣掉 Gap 30px 一份的長度後除二 */
+  }
+}
 @media (max-width: 600px) {
   main .content_cards .cards_card {
     width: 100%;
   }
+}
+main .content_cards .cards_card a {
+  text-decoration: none;
 }
 main .content_cards .cards_card img {
   width: 100%;
@@ -287,7 +288,7 @@ main .content_cards .cards_card .card_name {
   background: rgba(0, 0, 0, 0.5);
   position: absolute;
   left: 0;
-  bottom: 38px;
+  bottom: 45px;
   z-index: 100;
 }
 main .content_cards .cards_card .card_details {
@@ -305,4 +306,203 @@ footer {
   margin-top: 40px;
   text-align: center;
   background-color: #757575;
+}
+
+.attraction_container {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #666666;
+}
+@media (max-width: 1200px) {
+  .attraction_container {
+    width: 90%;
+  }
+}
+@media (max-width: 600px) {
+  .attraction_container {
+    width: 100%;
+  }
+}
+.attraction_container .attraction_container-top {
+  padding: 91px 15px 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+@media (max-width: 900px) {
+  .attraction_container .attraction_container-top {
+    padding: 54px 15px 0 15px;
+    flex-direction: column;
+  }
+}
+@media (max-width: 600px) {
+  .attraction_container .attraction_container-top {
+    padding: 54px 0 0 0;
+  }
+}
+.attraction_container .attraction_container-top .picture {
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+@media (max-width: 900px) {
+  .attraction_container .attraction_container-top .picture {
+    -o-object-fit: cover;
+       object-fit: cover;
+    margin-bottom: 20px;
+  }
+}
+.attraction_container .attraction_container-top .picture .attraction_img {
+  width: 100%;
+  border-radius: 5px;
+}
+.attraction_container .attraction_container-top .picture .prev, .attraction_container .attraction_container-top .picture .next {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  z-index: 100;
+  height: 36px;
+  width: 36px;
+  border: none;
+  border-radius: 50%;
+  background: url(/static/image/btn_leftArrow.png) center no-repeat;
+  transition: opacity 0.3s ease;
+  opacity: 0.5;
+}
+.attraction_container .attraction_container-top .picture .prev:hover, .attraction_container .attraction_container-top .picture .next:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+.attraction_container .attraction_container-top .picture .next {
+  left: auto;
+  right: 10px;
+  background: url(/static/image/btn_rightArrow.png) center no-repeat;
+}
+.attraction_container .attraction_container-top .picture .dots {
+  width: 100%;
+  bottom: 8px;
+  z-index: 100;
+  text-align: center;
+  position: absolute;
+}
+.attraction_container .attraction_container-top .picture .dots .dot {
+  width: 12px;
+  height: 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.7;
+  background-color: #FFFFFF;
+  transition: 0.5s transform ease-in-out;
+}
+.attraction_container .attraction_container-top .picture .dots .dot:hover {
+  background-color: #666666;
+  border: 2px solid #FFFFFF;
+}
+.attraction_container .attraction_container-top .picture .dots .active {
+  background-color: #666666;
+  border: 2px solid #FFFFFF;
+}
+.attraction_container .attraction_container-top .title {
+  width: 100%;
+}
+@media (max-width: 600px) {
+  .attraction_container .attraction_container-top .title {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+.attraction_container .attraction_container-top .title .attraction_name {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+.attraction_container .attraction_container-top .title .attraction_cateMrt {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.attraction_container .attraction_container-top .block {
+  padding: 15px 20px;
+  border-radius: 5px;
+  background-color: #E8E8E8;
+}
+.attraction_container .attraction_container-top .block h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+.attraction_container .attraction_container-top .block p {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+.attraction_container .attraction_container-top .block .dateSelect {
+  display: inline-block;
+  border: 0px;
+}
+.attraction_container .attraction_container-top .block .radio-up, .attraction_container .attraction_container-top .block .radio-down {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  position: relative;
+  top: 4px;
+}
+.attraction_container .attraction_container-top .block .radio-up:checked, .attraction_container .attraction_container-top .block .radio-down:checked {
+  background-color: #448899;
+  border: 2px solid #FFFFFF;
+}
+.attraction_container .attraction_container-top .block .booking_btn {
+  border: none;
+  font-size: 19px;
+  font-weight: 400;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 10px 0 16px 0;
+  color: #FFFFFF;
+  background-color: #448899;
+}
+.attraction_container .attraction_container-top .block .booking_btn:hover {
+  cursor: pointer;
+  background-color: #346976;
+}
+
+hr {
+  border: 0.5px solid #E8E8E8;
+  margin: 40px 0;
+}
+
+.attraction_container-bottom {
+  max-width: 1200px;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.attraction_container-bottom .attraction_description {
+  margin-bottom: 20px;
+}
+.attraction_container-bottom .attraction_address {
+  margin-bottom: 20px;
+}
+.attraction_container-bottom .attraction_address h3 {
+  font-weight: 700;
+}
+.attraction_container-bottom .attraction_transport {
+  margin-bottom: 80px;
+}
+.attraction_container-bottom .attraction_transport h3 {
+  font-weight: 700;
 }/*# sourceMappingURL=all.css.map */

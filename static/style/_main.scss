@@ -5,6 +5,7 @@ nav {
   top: 0;
   left: 0;
   right: 0;
+  border-bottom: 1px solid $color-border;
   .navWarp {
     max-width: 1200px;
     display: flex;
@@ -13,11 +14,8 @@ nav {
     margin: 0 auto;
     padding: 10px 0;
     text-decoration: none;
-      @include pad {
+      @include desktop {
         width: 90%;
-      }
-      @include mobile {
-        width: 95%;
       }
     .nav_logo {
       font-size: 30px;
@@ -52,10 +50,7 @@ nav {
     align-items: flex-start;
     margin: auto;
     padding: 85px 0;
-    @include pad {
-      width: 90%;
-    }
-    @include mobile {
+    @include desktop {
       width: 90%;
     }
   }
@@ -111,7 +106,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  @include pad {
+  @include desktop {
     width: 90%;
   }
   .mrtBar_btn-left {
@@ -166,15 +161,12 @@ main {
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 30px;
-    @include pad {
-      width: 90%;
-      gap: 10px;
-    }
-    @include mobile {
+    @include desktop {
       width: 90%;
     }
     .cards_card {
       width: 23%;
+      width: calc((100% - 90px) / 4); /* 扣掉 Gap 30px 三份的長度後除四 */
       border-radius: 5px;
       border: 1px solid $color-border;
       position: relative;
@@ -182,8 +174,17 @@ main {
       &:hover {
         opacity: 0.7;
       }
+      @include desktop {
+        width: calc((100% - 60px) / 3); /* 扣掉 Gap 30px 兩份的長度後除三 */
+      }
+      @include pad {
+        width: calc((100% - 30px) / 2); /* 扣掉 Gap 30px 一份的長度後除二 */
+      }
       @include mobile {
         width: 100%;
+      }
+      a {
+        text-decoration: none;
       }
       img {
         width: 100%;
@@ -199,7 +200,7 @@ main {
         background: rgba(0,0,0,0.5);
         position: absolute;
         left: 0;
-        bottom: 38px;
+        bottom: 45px;
         z-index: 100;
       }
       .card_details {

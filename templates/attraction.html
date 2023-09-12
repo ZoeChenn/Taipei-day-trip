@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/static/style/all.css">
+  <title>台北一日遊</title>
+</head>
+<body>
+  <nav>
+    <div class="navWarp">
+      <div class="nav_logo">
+        <a href="/"><h1>台北一日遊</h1></a>
+      </div>
+      <ul class="nav_menu">
+        <li><a href="#">預定行程</a></li>
+        <li><a href="#">登入/註冊</a></li>
+      </ul>
+    </div>
+  </nav>
+  <main class="attraction_container">
+    <div class="attraction_container-top">
+      <div class="picture">
+        <img src="" alt="" class="attraction_img">
+        <button class="prev"></button>
+        <button class="next"></button>
+        <div class="dots"></div>
+      </div>
+      <div class="title">
+        <div class="attraction_name"></div>
+        <div class="attraction_cateMrt"></div>
+        <div class="block">
+          <h3>訂購導覽行程</h3>
+          <p>以此景點為中心的一日行程，帶您探索城市角落故事</p>
+          <h3>選擇日期：</h3><input class="dateSelect" type="date" placeholder="yyyy-mm-dd">
+          <br>
+          <h3>選擇時間：</h3><input class="radio-up" type="radio" name="timing" checked><label for="">上半天</label>
+                            <input class="radio-down" type="radio" name="timing" ><label for="">下半天</label>
+          <br>
+          <h3>導覽費用：</h3>新台幣<span class="fee"> 2000 </span>元
+          <br>
+          <button class="booking_btn">開始預約行程</button>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="attraction_container-bottom">
+      <div class="attraction_description"></div>
+      <div class="attraction_address">
+        <h3>景點地址：</h3>
+        <p></p>
+      </div>
+      <div class="attraction_transport">
+        <h3>交通方式：</h3>
+        <p></p>
+      </div>
+    </div>
+  </main>
+  <footer>
+    COPYRIGHT © 2021 台北一日遊
+  </footer>
+  <div id="js-detective"></div>
+  <script src="/static/attraction.js" type="application/javascript"></script>
+</body>
+</html>
