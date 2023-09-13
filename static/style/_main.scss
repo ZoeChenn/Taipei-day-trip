@@ -32,6 +32,9 @@ nav {
         margin-right: 10px;
         text-decoration: none;
         color:  $color-secondary;
+        &:hover {
+          color: lighten($color-secondary, 30%);
+        }
       }
     }
   }
@@ -155,17 +158,16 @@ nav {
 main {
   height: 100%;
   .content_cards {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
     gap: 30px;
+    display: flex;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    justify-content: flex-start;
     @include desktop {
       width: 90%;
     }
     .cards_card {
-      width: 23%;
       width: calc((100% - 90px) / 4); /* 扣掉 Gap 30px 三份的長度後除四 */
       border-radius: 5px;
       border: 1px solid $color-border;
@@ -192,21 +194,23 @@ main {
         object-fit: cover;
       }
       .card_name {
-        font-size: 16px;
-        font-weight: 500;
-        padding: 10px;
-        width: 100%;
-        color: $color-white;
-        background: rgba(0,0,0,0.5);
-        position: absolute;
         left: 0;
+        width: 100%;
         bottom: 45px;
         z-index: 100;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        position: absolute;
+        color: $color-white;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        background: rgba(0,0,0,0.5);
       }
       .card_details {
-        color: $color-tertiary;
         padding: 10px;
         display: flex;
+        color: $color-tertiary;
         justify-content: space-between;
       }
     }
