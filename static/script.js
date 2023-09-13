@@ -6,6 +6,7 @@ let currentRequest = null;
 const searchInput = document.querySelector('.search_input');
 const searchButton = document.querySelector('.search_btn');
 const contentCards = document.querySelector('.content_cards');
+const cardLink = document.querySelector(".card_link");
 const mrtList = document.querySelector('.mrtBar_list');
 const mrtBtnLeft = document.querySelector('.mrtBar_btn-left');
 const mrtBtnRight = document.querySelector('.mrtBar_btn-right');
@@ -35,6 +36,8 @@ const observer = new IntersectionObserver(async (entries) => {
       isLoading = true;
       if (!keyword) {
         if (nextPage !== null) {
+          // console.log('有進入')
+          // console.log(nextPage)
           await homeDataAPI(nextPage);
         } else {
           return
@@ -63,6 +66,7 @@ function homeDataAPI(page) {
     .then(data => {
         allData = data.data;
         nextPage = data.nextPage;
+        // console.log('homeAPI:',nextPage)
         renderData(allData);
     })
     .catch(function(error){
@@ -105,6 +109,10 @@ function renderData(data) {
     const cardsCard = document.createElement("div");
     cardsCard.classList.add("cards_card");
 
+    const cardLink = document.createElement("a");
+    cardLink.classList.add("card_link");
+    cardLink.setAttribute('href', `/attraction/${attraction.id}`);
+
     const img = document.createElement("img");
     img.src = attraction.images[0];
     img.alt = "";
@@ -137,10 +145,13 @@ function renderData(data) {
     detailsDiv.appendChild(h5);
     detailsDiv.appendChild(h6);
 
-    // 將 imgDiv、nameDiv 及 detailsDiv 成為 cardsCard 的子層
-    cardsCard.appendChild(imgDiv);
-    cardsCard.appendChild(nameDiv);
-    cardsCard.appendChild(detailsDiv);
+    // 將 imgDiv、nameDiv 及 detailsDiv 成為 cardLink 的子層
+    cardLink.appendChild(imgDiv);
+    cardLink.appendChild(nameDiv);
+    cardLink.appendChild(detailsDiv);
+
+    // 將 cardLink 成為 cardsCard 的子層
+    cardsCard.appendChild(cardLink);
     
     // 將 cardsCard 成為 contentCards 的子層
     contentCards.appendChild(cardsCard);
@@ -188,6 +199,7 @@ mrtBtnRight.addEventListener('click', () => {
   });
 });
 
+
 // 輸入關鍵字查詢
 searchButton.addEventListener('click', () => {
   nextPage = 0;
@@ -199,3 +211,23 @@ searchButton.addEventListener('click', () => {
   contentCards.innerHTML = '';
   searchDataAPI(nextPage, keyword)
 });
+
+
+// 單一景點 API
+function attractionDataAPI(id) {
+  if (currentRequest) return;
+    currentRequest = fetch(`/api/attraction/${id}`)
+    currentRequest
+      .then(response => response.json())
+      .then(data => {
+        allData = data.data;
+        nextPage = data.nextPage;
+        renderAttractionDetail(data)
+      })
+      .catch(function(error){
+        console.log("發生錯誤" + error);
+      })
+      .finally(() => {
+        currentRequest = null;
+      });
+  }

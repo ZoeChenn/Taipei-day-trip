@@ -5,6 +5,7 @@ nav {
   top: 0;
   left: 0;
   right: 0;
+  border-bottom: 1px solid $color-border;
   .navWarp {
     max-width: 1200px;
     display: flex;
@@ -13,11 +14,8 @@ nav {
     margin: 0 auto;
     padding: 10px 0;
     text-decoration: none;
-      @include pad {
+      @include desktop {
         width: 90%;
-      }
-      @include mobile {
-        width: 95%;
       }
     .nav_logo {
       font-size: 30px;
@@ -34,13 +32,16 @@ nav {
         margin-right: 10px;
         text-decoration: none;
         color:  $color-secondary;
+        &:hover {
+          color: lighten($color-secondary, 30%);
+        }
       }
     }
   }
 }
 
 .banner {
-  background: url(welcome.png);
+  background: url(/static/image/welcome.png);
   background-size: cover;
   height: 320px;
   margin-top: 54px;
@@ -52,10 +53,7 @@ nav {
     align-items: flex-start;
     margin: auto;
     padding: 85px 0;
-    @include pad {
-      width: 90%;
-    }
-    @include mobile {
+    @include desktop {
       width: 90%;
     }
   }
@@ -93,7 +91,7 @@ nav {
     width: 60px;
     height: 46px;
     border-radius: 0 5px 5px 0;
-    background: $color-primary url(/static/icon_search.png) center/30px no-repeat;
+    background: $color-primary url(/static/image/icon_search.png) center/30px no-repeat;
     &:hover {
       cursor: pointer;
       background-color: darken($color-primary, 10%);
@@ -111,7 +109,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  @include pad {
+  @include desktop {
     width: 90%;
   }
   .mrtBar_btn-left {
@@ -120,7 +118,7 @@ nav {
     border: none;
     border-radius: 50%;
     padding: 9px 15px;
-    background: url(/static/arrow-left.svg) center/32px no-repeat;
+    background: url(/static/image/arrow-left.svg) center/32px no-repeat;
     transition: opacity 0.3s ease;
     &:hover {
       cursor: pointer;
@@ -133,7 +131,7 @@ nav {
     border: none;
     border-radius: 50%;
     padding: 9px 15px;
-    background: url(/static/arrow-right.svg) center/32px no-repeat;
+    background: url(/static/image/arrow-right.svg) center/32px no-repeat;
     transition: opacity 0.3s ease;
     &:hover {
       cursor: pointer;
@@ -160,21 +158,17 @@ nav {
 main {
   height: 100%;
   .content_cards {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
     gap: 30px;
-    @include pad {
-      width: 90%;
-      gap: 10px;
-    }
-    @include mobile {
+    display: flex;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    justify-content: flex-start;
+    @include desktop {
       width: 90%;
     }
     .cards_card {
-      width: 23%;
+      width: calc((100% - 90px) / 4); /* 扣掉 Gap 30px 三份的長度後除四 */
       border-radius: 5px;
       border: 1px solid $color-border;
       position: relative;
@@ -182,8 +176,17 @@ main {
       &:hover {
         opacity: 0.7;
       }
+      @include desktop {
+        width: calc((100% - 60px) / 3); /* 扣掉 Gap 30px 兩份的長度後除三 */
+      }
+      @include pad {
+        width: calc((100% - 30px) / 2); /* 扣掉 Gap 30px 一份的長度後除二 */
+      }
       @include mobile {
         width: 100%;
+      }
+      a {
+        text-decoration: none;
       }
       img {
         width: 100%;
@@ -191,21 +194,23 @@ main {
         object-fit: cover;
       }
       .card_name {
+        left: 0;
+        width: 100%;
+        bottom: 45px;
+        z-index: 100;
+        padding: 10px;
         font-size: 16px;
         font-weight: 500;
-        padding: 10px;
-        width: 100%;
-        color: $color-white;
-        background: rgba(0,0,0,0.5);
         position: absolute;
-        left: 0;
-        bottom: 38px;
-        z-index: 100;
+        color: $color-white;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        background: rgba(0,0,0,0.5);
       }
       .card_details {
-        color: $color-tertiary;
         padding: 10px;
         display: flex;
+        color: $color-tertiary;
         justify-content: space-between;
       }
     }
