@@ -17,6 +17,10 @@ nav {
       @include desktop {
         width: 90%;
       }
+      @include mobile {
+        width: 100%;
+        padding: 10px 10px;
+      }
     .nav_logo {
       font-size: 30px;
       font-weight: 700;
