@@ -16,7 +16,6 @@ if (attractionId) {
   })
   .then((data) => {
     images = data.data.images;
-    console.log(`照片總共有 ${images.length} 張`)
     renderAttractionDetail(data);
     updateSlide();
   })
@@ -77,7 +76,7 @@ function updateSlide() {
   const imgSlides = document.querySelectorAll('.attraction_img');
   const containerWidth = pictureDiv.clientWidth;
   const offset = currentImageIndex * containerWidth * -1;
-  console.log(containerWidth)
+
   imgSlides.forEach((slide) => {
     slide.style.transform = `translateX(${offset}px)`;
   });
@@ -97,7 +96,6 @@ function updateDots() {
 }
 
 prevBtn.addEventListener("click", () => {
-  console.log('currentImageIndex',currentImageIndex)
   if (currentImageIndex > 0) {
     currentImageIndex--;
   } else {
@@ -107,7 +105,6 @@ prevBtn.addEventListener("click", () => {
 });
 
 nextBtn.addEventListener("click", () => {
-  console.log('currentImageIndex',currentImageIndex)
   if (currentImageIndex < images.length - 1) {
     currentImageIndex++;
   } else {

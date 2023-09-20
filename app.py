@@ -1,9 +1,11 @@
+import jwt
 import json
 import os, re
+import datetime
 import traceback
 import mysql.connector
-from mysql.connector import pooling
 from dotenv import load_dotenv
+from mysql.connector import pooling
 from flask import *
 app=Flask(
   __name__, 
@@ -39,14 +41,12 @@ app.secret_key = SECRET_KEY
 def getConn():
   conn = pool.get_connection()
   cursor = conn.cursor()
-  print("建立連線")
   return conn, cursor
 
 # 關閉連線
 def dispose(cursor, conn):
   cursor.close()
   conn.close()
-  print("關閉連線")
 
 # Pages
 @app.route("/")
@@ -74,6 +74,37 @@ def find_mrt_or_attraction(keyword, page):
   results = cursor.fetchall()
   dispose(cursor, conn)
   return results , resultsNum
+
+# 檢查帳號是否重複
+def check_account(email):
+  conn, cursor = getConn()
+  cursor.execute("SELECT * FROM member WHERE username = %s", (email,))
+  result = cursor.fetchone()
+  dispose(cursor, conn)
+  return result is not None
+
+# 檢查帳號密碼是否吻合已註冊之會員資料
+def check_member(email, password):
+  conn, cursor = getConn()
+  cursor.execute("SELECT * FROM member WHERE (username, password) = (%s, %s)", (email, password))
+  result = cursor.fetchone()
+  dispose(cursor, conn)
+  return result
+
+# 確認會員資訊
+def get_member_info(id):
+  conn, cursor = getConn()
+  cursor.execute("SELECT * FROM member WHERE id = %s", (id, ))
+  result = cursor.fetchone()
+  dispose(cursor, conn)
+  return result
+
+# 新增帳號到資料庫
+def add_account(name, email, password):
+  conn, cursor = getConn()
+  cursor.execute("INSERT INTO member (name, username, password) VALUES (%s, %s, %s)", (name, email, password))
+  conn.commit()
+  dispose(cursor, conn)
 
 # 取得景點資料列表
 @app.route("/api/attractions", methods=['GET'])
@@ -182,5 +213,62 @@ def api_mrts():
   except Exception as e:
     current_app.logger.error(traceback.format_exc())
     return jsonify({"error": True, "message": "伺服器內部錯誤"})
+
+# 註冊
+@app.route("/api/user", methods=["POST"])
+def api_signup():
+  try:
+    data = request.get_json()
+    name = data['name']
+    email = data['email']
+    password = data['password']
+
+    if check_account(email):
+      return jsonify({"error": True, "message": "註冊失敗，此帳號已被註冊"}), 400
+    else:
+      add_account(name, email, password)
+      return jsonify({"ok": True}), 200
+  except Exception as e:
+    return jsonify({"error": True, "message": "伺服器內部錯誤"}), 500
+
+# 登入
+@app.route("/api/user/auth", methods=["PUT"])
+def api_login():
+  try:
+    data = request.get_json()
+    email = data['email']
+    password = data['password']
+    result = check_member(email, password)
+
+    if result is not None:
+      expTime = datetime.datetime.utcnow() + datetime.timedelta(days=7)
+      payload = {
+        "member_id": result[0],
+        "name": result[1],
+        "email": result[2],
+        "exp": expTime
+      }
+      encoded_jwt = jwt.encode(payload, "secretKey", algorithm="HS256")
+      return jsonify({"token": encoded_jwt}), 200
+    else:
+      return jsonify({"error": True, "message": "登入失敗，帳號或密碼錯誤"}), 400
+  except Exception as e:
+    return jsonify({"error": True, "message": "伺服器內部錯誤"}), 500
+
+# 取得當前登入的會員資訊
+@app.route("/api/user/auth", methods=["GET"])
+def api_get_status():
+  token = request.headers.get("Authorization")
+  if token != "null":
+    decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
+    member_info = get_member_info(decoded_token.get('member_id'))
+    user_data = {
+      "id": member_info[0],
+      "name": member_info[1],
+      "email": member_info[2]
+    }
+    return jsonify({"data": user_data}), 200
+  else:
+    return jsonify({"data": None}), 200
 
 app.run(host="0.0.0.0", port=3000)
