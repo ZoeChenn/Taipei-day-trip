@@ -16,7 +16,6 @@ if (attractionId) {
   })
   .then((data) => {
     images = data.data.images;
-    // console.log(images.length)
     renderAttractionDetail(data);
     updateSlide();
   })
@@ -32,22 +31,29 @@ function renderAttractionDetail(data) {
   const attractionAddress = data.data.address;
   const attractionTransport = data.data.transport;
   const attractionDescription = data.data.description;
-  const attractionImage = data.data.images[0];
 
   const nameDiv = document.querySelector(".attraction_name");
   const cateMrtDiv = document.querySelector(".attraction_cateMrt");
   const descriptionDiv = document.querySelector(".attraction_description");
   const addressDiv = document.querySelector(".attraction_address");
   const transportDiv = document.querySelector(".attraction_transport");
-  const imageDiv = document.querySelector(".attraction_img");
-  imageDiv.innerHTML = "";
 
   nameDiv.textContent = attractionName;
   cateMrtDiv.textContent = `${attractionCategory} at ${attractionMrt}`;
   descriptionDiv.textContent = attractionDescription;
   addressDiv.querySelector("p").textContent = attractionAddress;
   transportDiv.querySelector("p").textContent = attractionTransport;
-  imageDiv.src = attractionImage;
+
+  for (const imageUrl of data.data.images) {
+    const image = document.createElement("img");
+    image.classList.add("attraction_img");
+    image.src = imageUrl;
+    image.alt = attractionName;
+
+    const pictureDiv = document.querySelector(".picture");
+    pictureDiv.appendChild(image);
+  }
+  updateSlide();
 }
 
 radioUp.addEventListener('click', () => {
@@ -61,15 +67,19 @@ radioDown.addEventListener('click', () => {
 })
 
 // 照片輪播部分
-const imgSlide = document.querySelector(".attraction_img");
 const prevBtn = document.querySelector(".prev");
 const nextBtn = document.querySelector(".next");
 const dotsContainer = document.querySelector(".dots");
+const pictureDiv = document.querySelector(".picture");
 
 function updateSlide() {
-  // console.log(images[currentImageIndex])
-  // console.log(currentImageIndex)
-  imgSlide.src = images[currentImageIndex];
+  const imgSlides = document.querySelectorAll('.attraction_img');
+  const containerWidth = pictureDiv.clientWidth;
+  const offset = currentImageIndex * containerWidth * -1;
+
+  imgSlides.forEach((slide) => {
+    slide.style.transform = `translateX(${offset}px)`;
+  });
   updateDots();
 }
 
