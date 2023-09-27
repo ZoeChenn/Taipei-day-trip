@@ -120,3 +120,67 @@ dotsContainer.addEventListener("click", (e) => {
     updateSlide();
   }
 });
+
+// 動態調整 date 的最小值（避免選取今日及過去時間）
+const dateInput = document.querySelector('.dateSelect');
+
+// 取得目前日期並轉換成 YYYY-MM-DD 格式
+const today = new Date();
+const year = today.getFullYear();
+let month = today.getMonth() + 1;
+let day = today.getDate() + 1;
+
+// 若月份和日期為個位數的情況，補零
+month = month < 10 ? `0${month}` : month;
+day = day < 10 ? `0${day}` : day;
+
+// 設定 min 屬性為目前日期
+const formattedToday = `${year}-${month}-${day}`;
+dateInput.setAttribute('min', formattedToday);
+
+
+// 預定表單部分
+import { checkUserLoginStatus } from '/static/modal.js';
+
+let bookThisSpotBtn = document.getElementById('bookThisSpot');
+let loginOrSignupBtn = document.getElementById('loginOrSignup');
+
+bookThisSpotBtn.addEventListener('click', async () => {
+  const isLoggedIn = await checkUserLoginStatus();
+  const date = dateInput.value
+  const time = radioDown.checked ? 'afternoon' : 'morning';
+  const tourFee = document.querySelector('.fee').innerText.trim();
+  const token = localStorage.getItem('token');
+
+  if ( !date ) {
+    alert('請選擇預約日期')
+  }
+  else if (!isLoggedIn) {
+    loginOrSignupBtn.onclick();
+  }
+  else {
+    console.log('attractionId:', attractionId);
+    console.log('Selected Date:', date);
+    console.log('Selected Time:', time);
+    console.log('Tour Fee:', tourFee);
+    fetch('/api/booking', {
+      method: 'POST',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        attractionId: attractionId,
+        date: date,
+        time: time,
+        price: tourFee
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      window.location.href = '/booking';
+    })
+    .catch(error => console.error('Signup error:', error));
+  }
+})
