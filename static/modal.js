@@ -1,11 +1,11 @@
 // 獲取彈出視窗元素
-var loginModal = document.getElementById('loginModal');
-var signupModal = document.getElementById('signupModal');
-var backToSignup = document.getElementById('backToSignup');
-var backToLogin = document.getElementById('backToLogin');
-var loginOrSignupBtn = document.getElementById('loginOrSignup');
-var loginClose = document.getElementById('loginClose');
-var signupClose = document.getElementById('signupClose');
+let loginModal = document.getElementById('loginModal');
+let signupModal = document.getElementById('signupModal');
+let backToSignup = document.getElementById('backToSignup');
+let backToLogin = document.getElementById('backToLogin');
+let loginOrSignupBtn = document.getElementById('loginOrSignup');
+let loginClose = document.getElementById('loginClose');
+let signupClose = document.getElementById('signupClose');
 
 // 點擊按鈕時顯示彈出視窗
 loginOrSignupBtn.onclick = function() {
@@ -117,24 +117,27 @@ document.addEventListener('DOMContentLoaded', () => {
   checkUserLoginStatus();
 });
 
-function checkUserLoginStatus() {
+async function checkUserLoginStatus() {
   const token = localStorage.getItem('token');
-
-  fetch('/api/user/auth', {
-    method: 'GET',
-    headers: {
-      'Authorization': token,
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
+  try {
+    const response = await fetch('/api/user/auth', {
+      method: 'GET',
+      headers: {
+        'Authorization': token,
+      }
+    });
+    const data = await response.json();
     if (data.data) {
       showLogInUI();
+      return { isLoggedIn: true, name: data.data.name };
     } else {
       showLogOutUI();
+      return false;
     }
-  })
-  .catch(error => console.error('Error checking user login status:', error));
+  } catch (error) {
+    console.error('Error checking user login status:', error);
+    return false;
+  }
 }
 
 function showLogInUI() {
@@ -153,3 +156,17 @@ function handleLogout() {
 function showLogOutUI() {
   loginOrSignupBtn.innerText = '登入/註冊';
 }
+
+export { checkUserLoginStatus };
+
+let bookingBtn = document.getElementById('booking');
+
+bookingBtn.addEventListener('click', async () => {
+  const isLoggedIn = await checkUserLoginStatus();
+
+  if (isLoggedIn) {
+    window.location.href = '/booking';
+  } else {
+    loginOrSignupBtn.onclick();
+  }
+})

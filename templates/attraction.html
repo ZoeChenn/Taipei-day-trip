@@ -13,7 +13,7 @@
         <a href="/"><h1>台北一日遊</h1></a>
       </div>
       <ul class="nav_menu">
-        <li><a>預定行程</a></li>
+        <li><a id="booking">預定行程</a></li>
         <li><a id="loginOrSignup">登入/註冊</a></li>
       </ul>
     </div>
@@ -33,14 +33,14 @@
         <div class="block">
           <h3>訂購導覽行程</h3>
           <p>以此景點為中心的一日行程，帶您探索城市角落故事</p>
-          <h3>選擇日期：</h3><input class="dateSelect" type="date" placeholder="yyyy-mm-dd">
+          <h3>選擇日期：</h3><input class="dateSelect" type="date" placeholder="yyyy-mm-dd" min="2023-09-21">
           <br>
           <h3>選擇時間：</h3><input class="radio-up" type="radio" name="timing" checked><label for="">上半天</label>
                             <input class="radio-down" type="radio" name="timing" ><label for="">下半天</label>
           <br>
           <h3>導覽費用：</h3>新台幣<span class="fee"> 2000 </span>元
           <br>
-          <button class="booking_btn">開始預約行程</button>
+          <button class="booking_btn" id="bookThisSpot">開始預約行程</button>
         </div>
       </div>
     </div>
@@ -100,7 +100,7 @@
       </div>
     </div>
   </div>
-  <script src="/static/attraction.js" type="application/javascript"></script>
-  <script src="/static/modal.js" type="application/javascript"></script>
+  <script src="/static/attraction.js" type="module"></script>
+  <script src="/static/modal.js" type="module"></script>
 </body>
 </html>

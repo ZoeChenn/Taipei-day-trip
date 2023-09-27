@@ -106,6 +106,41 @@ def add_account(name, email, password):
   conn.commit()
   dispose(cursor, conn)
 
+# 取得會員預訂資訊
+def get_member_booking(memberId):
+  conn, cursor = getConn()
+  cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, booking.date, booking.time, booking.price FROM booking INNER JOIN attractions ON attraction_id = attractions.id ORDER BY member_id = %s", (memberId, ))
+  result = cursor.fetchone()
+  dispose(cursor, conn)
+  return result
+
+# 新增會員訂單
+def create_booking(memberId, attractionId, date, time, price):
+  conn, cursor = getConn()
+  try:
+    cursor.execute("SELECT COUNT(*) FROM booking WHERE member_id = %s", (memberId,))
+    result = cursor.fetchone()
+    if result and result[0] > 0:
+      cursor.execute("DELETE FROM booking WHERE member_id = %s", (memberId,))
+
+    cursor.execute("INSERT INTO booking (member_id, attraction_id, date, time, price) VALUES (%s, %s, %s, %s, %s)",(memberId, attractionId, date, time, price,))
+    conn.commit()
+    dispose(cursor, conn)
+    return True
+  except Exception as e:
+    print("Error in create_booking:", str(e))
+    conn.rollback()
+    dispose(cursor, conn)
+    return False
+
+# 刪除預定行程
+def delete_booking(memberId):
+  conn, cursor = getConn()
+  cursor.execute("DELETE FROM booking WHERE member_id = %s", (memberId,))
+  conn.commit()
+  dispose(cursor, conn)
+  return True
+
 # 取得景點資料列表
 @app.route("/api/attractions", methods=['GET'])
 def api_attractions():
@@ -270,5 +305,77 @@ def api_get_status():
     return jsonify({"data": user_data}), 200
   else:
     return jsonify({"data": None}), 200
+
+# 取得尚未確認下單的預定行程
+@app.route("/api/booking", methods=["GET"])
+def api_check_booking_status():
+  try:
+    token = request.headers.get("Authorization")
+
+    if token != "null":
+      decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
+      memberId = get_member_info(decoded_token.get('member_id'))[0]
+      bookingData = get_member_booking(memberId)
+
+      if bookingData is not None:
+        data = {
+          "attraction" : {
+            "id": bookingData[0],
+            "name": bookingData[1],
+            "address": bookingData[2],
+            "image": bookingData[3].split(',')[0]
+          },
+          "date": bookingData[4].strftime('%Y-%m-%d'),
+          "time": bookingData[5],
+          "price": bookingData[6]
+        }
+      else:
+        data = {}
+      
+      api_response = {
+        "data": data
+      }
+      return jsonify(api_response), 200
+    else:
+      return jsonify({"data": None}), 200
+  except jwt.ExpiredSignatureError:
+    return jsonify({"error": True, "message": "未登入系統，拒絕存取"}), 403
+
+# 建立新的預定行程
+@app.route("/api/booking", methods=["POST"])
+def api_create_booking():
+  try:
+    token = request.headers.get("Authorization")
+
+    if token == "null":
+      return jsonify({"error": True, "message": "未登入系統，拒絕存取"}), 403
+
+    decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
+    memberId = get_member_info(decoded_token.get('member_id'))[0]
+
+    data = request.get_json()
+    attractionId, date, time, price = data['attractionId'], data['date'], data['time'], data['price']
+
+    if create_booking(memberId, attractionId, date, time, price):
+      return jsonify({"ok": True}), 200
+    else:
+      return jsonify({"error": True, "message": "建立失敗，輸入不正確或其他原因"}), 400
+  except Exception as e:
+    return jsonify({"error": True, "message": "伺服器內部錯誤"}), 500
+
+# 刪除目前的預定行程
+@app.route("/api/booking", methods=["DELETE"])
+def api_delete_booking():
+  token = request.headers.get("Authorization")
+
+  if token == "null":
+    return jsonify({"error": True, "message": "未登入系統，拒絕存取"}), 403
+
+  decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
+  memberId = get_member_info(decoded_token.get('member_id'))[0]
+
+  if delete_booking(memberId):
+    return jsonify({"ok": True}), 200
+
 
 app.run(host="0.0.0.0", port=3000)
