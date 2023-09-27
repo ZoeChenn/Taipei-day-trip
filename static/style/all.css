@@ -638,10 +638,12 @@ hr {
   font-weight: 700;
 }
 .booking_container input {
-  height: 18px;
-  width: 180px;
+  font-size: 16px;
+  font-weight: 500;
   padding: 10px;
-  margin-bottom: 10px;
+  border: 1px solid #E8E8E8;
+  border-radius: 5px;
+  margin-bottom: 15px;
   align-items: center;
 }
 .booking_container .booking_message {
