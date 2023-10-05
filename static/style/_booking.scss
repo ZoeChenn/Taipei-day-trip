@@ -7,28 +7,20 @@
     font-size: 19px;
     font-weight: 700;
   }
-  input {
-    font-size: 16px;
-    font-weight: 500;
-    padding: 10px;
-    border: 1px solid $color-border;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    align-items: center;
-  }
   .booking_message {
+    padding-top: 180px;
     text-align: center;
   }
   .booking_container-top {
-    padding: 35px 110px 0 110px;
+    padding: 0 110px 0 110px;
     @include desktop {
-      padding: 35px 70px 0 70px;
+      padding: 0 70px 0 70px;
     }
     @include pad {
-      padding: 35px 40px 0 40px;
+      padding: 0 40px 0 40px;
     }
     @include mobile {
-      padding: 35px 10px 0 10px;
+      padding: 0 10px 0 10px;
     }
     .top_warp {
       padding-top: 30px;
@@ -91,13 +83,13 @@
   .booking_container-middle {
     padding: 0 110px;
     @include desktop {
-      padding: 35px 70px 0 70px;
+      padding: 0 70px 0 70px;
     }
     @include pad {
-      padding: 35px 40px 0 40px;
+      padding: 0 40px 0 40px;
     }
     @include mobile {
-      padding: 35px 10px 0 10px;
+      padding: 0 10px 0 10px;
     }
     h2 {
       margin-bottom: 20px;
@@ -105,33 +97,59 @@
     p {
       font-weight: 700;
     }
+    input {
+      font-size: 16px;
+      font-weight: 500;
+      padding: 10px;
+      border: 1px solid $color-border;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      outline-color: $color-primary;
+    }
   }
   .booking_container-bottom {
     padding: 0 110px;
     @include desktop {
-      padding: 35px 70px 0 70px;
+      padding: 0 70px 0 70px;
     }
     @include pad {
-      padding: 35px 40px 0 40px;
+      padding: 0 40px 0 40px;
     }
     @include mobile {
-      padding: 35px 10px 0 10px;
+      padding: 0 10px 0 10px;
     }
     h2 {
       margin-bottom: 20px;
+    }
+    .form-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      .tpfield {
+        height: 40px;
+        width: 188px;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid $color-border;
+        display: inline-block;
+      }
+    }
+    .tappay-field-focus {
+      border: 2px solid $color-primary !important;
     }
   }
   .booking_container-payment {
     padding: 0 110px;
     text-align: end;
     @include desktop {
-      padding: 35px 70px 0 70px;
+      padding: 0 70px 0 70px;
     }
     @include pad {
-      padding: 35px 40px 0 40px;
+      padding: 0 40px 0 40px;
     }
     @include mobile {
-      padding: 35px 10px 0 10px;
+      padding: 0 10px 0 10px;
     }
     h3 {
       font-weight: 700;
@@ -148,6 +166,10 @@
       &:hover {
         cursor: pointer;
         background-color: darken($color-primary, 10%);
+      }
+      &:disabled {
+        cursor: no-drop;
+        background-color: $color-secondary;
       }
     }
   }

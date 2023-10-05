@@ -112,6 +112,15 @@ function signupUser(e) {
   .catch(error => console.error('Signup error:', error));
 }
 
+window.addEventListener('load', () => {
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  const mainElement = document.querySelector('main');
+  const footerElement = document.querySelector('footer');
+  loadingOverlay.style.display = 'none';
+  mainElement.style.display = 'block';
+  footerElement.style.display = 'block';
+});
+
 // 檢查使用者狀態
 document.addEventListener('DOMContentLoaded', () => {
   checkUserLoginStatus();
@@ -129,7 +138,7 @@ async function checkUserLoginStatus() {
     const data = await response.json();
     if (data.data) {
       showLogInUI();
-      return { isLoggedIn: true, name: data.data.name };
+      return { isLoggedIn: true, name: data.data.name, email: data.data.email };
     } else {
       showLogOutUI();
       return false;
@@ -160,7 +169,6 @@ function showLogOutUI() {
 export { checkUserLoginStatus };
 
 let bookingBtn = document.getElementById('booking');
-
 bookingBtn.addEventListener('click', async () => {
   const isLoggedIn = await checkUserLoginStatus();
 
