@@ -18,6 +18,13 @@
       </ul>
     </div>
   </nav>
+  <div id="loadingOverlay" class="spinner-box">
+    <div class="pulse-container">  
+      <div class="pulse-bubble pulse-bubble-1"></div>
+      <div class="pulse-bubble pulse-bubble-2"></div>
+      <div class="pulse-bubble pulse-bubble-3"></div>
+    </div>
+  </div>
   <main class="booking_container">
     <div class="booking_container-top">
       <h2>您好，，待預訂的行程如下：</h2>
@@ -53,16 +60,25 @@
     <hr>
     <div class="booking_container-bottom">
       <h2>信用卡付款資訊</h2>
-      <label for="order_credicCard">卡片號碼：</label><input id="creditCardInput" type="text" maxlength="19" placeholder="**** **** **** ****" required>
-      <br>
-      <label for="order_exp">過期時間：</label><input id="expInput" type="datetime" placeholder="MM / YY" required>
-      <br>
-      <label for="order_cvv">驗證密碼：</label><input id="cvvInput" type="text" maxlength="3" placeholder="CVV" required>
+      <form>
+        <div class="form-group">
+          <label for="card-number" class="control-label">卡片號碼：</label>
+          <div class="tpfield" id="card-number"></div>
+        </div>
+        <div class="form-group">
+          <label for="card-expiration-date" class="control-label">過期時間：</label>
+          <div class="tpfield" id="card-expiration-date"></div>
+        </div>
+        <div class="form-group">
+          <label for="card-ccv" class="control-label">驗證密碼：</label>
+          <div class="tpfield" id="card-ccv"></div>
+        </div>
+      </form>
     </div>
     <hr>
     <div class="booking_container-payment">
       <h3>總價：新台幣 <span class="total"></span> 元</h3>
-      <button class="payBtn">確認訂購並付款</button>
+      <button type="submit" id="payBtn" class="payBtn" >確認訂購並付款</button>
     </div>
   </main>
   <footer>
@@ -107,7 +123,10 @@
       </div>
     </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.17.0"></script>
   <script src="/static/modal.js" type="module"></script>
   <script src="/static/booking.js" type="module"></script>
+  <script src="/static/payment.js" type="module"></script>
 </body>
 </html>

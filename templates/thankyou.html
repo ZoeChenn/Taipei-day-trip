@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="/static/style/all.css">
+  <title>台北一日遊</title>
+</head>
+<body>
+  <nav>
+    <div class="navWarp">
+      <div class="nav_logo">
+        <a href="/"><h1>台北一日遊</h1></a>
+      </div>
+      <ul class="nav_menu">
+        <li><a id="booking">預定行程</a></li>
+        <li><a id="loginOrSignup">登入/註冊</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div id="loadingOverlay" class="spinner-box">
+    <div class="pulse-container">  
+      <div class="pulse-bubble pulse-bubble-1"></div>
+      <div class="pulse-bubble pulse-bubble-2"></div>
+      <div class="pulse-bubble pulse-bubble-3"></div>
+    </div>
+  </div>
+  <main class="thankyou_container">
+    <h2>行程預定成功</h2>
+    <h2>您的訂單編號如下</h2>
+    <div class="orderNumber" id="orderNumberDiv">2222222222222222</div>
+    <p>請記住此編號，或到會員中心查詢歷史訂單</p>
+  </main>
+  <footer>
+    COPYRIGHT © 2021 台北一日遊
+  </footer>
+  <!-- 登入視窗 -->
+  <div id="loginModal" class="Modal">
+    <div class="border-box">
+      <div class="modal-content">
+        <span id="loginClose" class="close"></span>
+        <h2>登入會員帳號</h2>
+        <!-- 登入表單 -->
+        <form id="loginForm">
+          <input type="email" id="loginEmail" name="email" placeholder="輸入電子信箱" required>
+          <input type="password" id="loginPassword" name="password" placeholder="輸入密碼" required>
+          <button type="submit">登入帳戶</button>
+        </form>
+        <div id="loginError" class="errorMsg"></div>
+        <div class="question">
+          還沒有帳戶？<a id="backToSignup">點此註冊</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 註冊視窗 -->
+  <div id="signupModal" class="Modal">
+    <div class="border-box">
+      <div class="modal-content">
+        <span id="signupClose" class="close"></span>
+        <h2>註冊會員帳號</h2>
+        <!-- 註冊表單 -->
+        <form id="signupForm">
+          <input type="text" id="signupName" name="name" placeholder="輸入姓名" required>
+          <input type="email" id="signupEmail" name="email" placeholder="輸入電子信箱" required>
+          <input type="password" id="signupPassword" name="password" placeholder="輸入密碼" required>
+          <button type="submit">註冊新帳戶</button>
+        </form>
+        <div id="signupError" class="errorMsg"></div>
+        <div class="question">
+          已經有帳戶了？<a id="backToLogin">點此登入</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.14.0"></script>
+  <script src="/static/modal.js" type="module"></script>
+  <script src="/static/thankyou.js" type="module"></script>
+</body>
+</html>

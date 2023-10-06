@@ -1,13 +1,13 @@
 import { checkUserLoginStatus } from '/static/modal.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const { isLoggedIn, name } = await checkUserLoginStatus();
+  const { isLoggedIn, name, email } = await checkUserLoginStatus();
 
   if (!isLoggedIn) {
     window.location.href = '/';
   } else {
     const bookingData = await apiBookingData();
-    renderBookingData({ ...bookingData, name });
+    renderBookingData({ ...bookingData, name, email });
   }
 });
 
@@ -33,7 +33,11 @@ async function apiBookingData() {
   }
 }
 
+export { apiBookingData };
+
 function renderBookingData(data) {
+  const orderName = document.getElementById('nameInput');
+  const orderEmail = document.getElementById('emailInput');
   const bookingContainer = document.querySelector('.booking_container');
   const bookingContainerTop = document.querySelector('.booking_container-top');
   const total = document.querySelector('.total');
@@ -43,7 +47,7 @@ function renderBookingData(data) {
     return;
   }
 
-  const { name, attraction, date, time, price } = data;
+  const { email, name, attraction, date, time, price } = data;
   let timeShower;
 
   if (time === "morning") {
@@ -73,6 +77,8 @@ function renderBookingData(data) {
 
   total.innerHTML = price;
   bookingContainerTop.innerHTML = bookingContent;
+  orderName.value = name;
+  orderEmail.value = email;
 
   const deleteBtn = bookingContainerTop.querySelector('.booking_deleteBtn');
   deleteBtn.addEventListener('click', () => {
@@ -103,33 +109,8 @@ async function apiDeleteBooking() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const phoneInput = document.getElementById('telInput');
-  const creditCardInput = document.getElementById('creditCardInput');
-  const cvvInput = document.getElementById('cvvInput');
-  const expInput = document.getElementById('expInput');
-
   // 限制手機號碼只能輸入數字，且長度最多 10 碼
   phoneInput.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
-  });
-
-  // 限制卡片號碼只能輸入數字，且輸入四個字之後自動插入空格
-  creditCardInput.addEventListener('input', (e) => {
-    const cleanValue = e.target.value.replace(/\D/g, '');
-    const formattedValue = cleanValue.replace(/(\d{4}(?=\d))/g, '$1 '); // 在每四個數字後加入空格
-    e.target.value = formattedValue.trim().slice(0, 19);
-  });
-
-  // 限制過期時間只能輸入數字和斜線，且輸入兩個數字後自動插入斜線
-  expInput.addEventListener('input', (e) => {
-    let value = e.target.value.replace(/[^\d]/g, '');
-    if (value.length > 2) {
-      value = value.slice(0, 2) + '/' + value.slice(2);
-    }
-    e.target.value = value.slice(0, 5);
-  });
-
-  // 限制驗證密碼只能輸入數字，且長度最多 3 碼
-  cvvInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
   });
 });

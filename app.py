@@ -1,6 +1,7 @@
 import jwt
 import json
 import os, re
+import requests
 import datetime
 import traceback
 import mysql.connector
@@ -23,6 +24,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 SECRET_KEY = os.getenv("SECRET_KEY")
+PARTNER_KEY = os.getenv("PARTNER_KEY")
 
 # 建立並設定連接池
 pool = pooling.MySQLConnectionPool(
@@ -61,6 +63,9 @@ def booking():
 @app.route("/thankyou")
 def thankyou():
   return render_template("thankyou.html")
+@app.route("/test")
+def test():
+  return render_template("test.html")
 
 # 完全比對捷運站名稱 or 模糊比對景點名稱的關鍵字
 def find_mrt_or_attraction(keyword, page):
@@ -109,9 +114,9 @@ def add_account(name, email, password):
 # 取得會員預訂資訊
 def get_member_booking(memberId):
   conn, cursor = getConn()
-  cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, booking.date, booking.time, booking.price FROM booking INNER JOIN attractions ON attraction_id = attractions.id ORDER BY member_id = %s", (memberId, ))
+  cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, booking.date, booking.time, booking.price FROM booking INNER JOIN attractions ON attraction_id = attractions.id WHERE member_id = %s", (memberId, ))
   result = cursor.fetchone()
-  dispose(cursor, conn)
+  # dispose(cursor, conn)
   return result
 
 # 新增會員訂單
@@ -140,6 +145,77 @@ def delete_booking(memberId):
   conn.commit()
   dispose(cursor, conn)
   return True
+
+# 生成訂單資訊
+def create_order(memberId, attractionId, date, time, price):
+  timestamp = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
+  order_number = f'{timestamp}{memberId}'
+  try:
+    conn, cursor = getConn()
+    cursor.execute(
+      "INSERT INTO orders (number, status, message, date, time, price, attraction_id, member_id) VALUES (%s, NULL, '未付款', %s, %s, %s, %s, %s)",
+      (order_number, date, time, price, attractionId, memberId)
+    )
+    conn.commit()
+    delete_booking(memberId)
+    payment_status = {
+      "status": None,
+      "message": "未付款"
+    }
+    return order_number, payment_status
+  except Exception as e:
+    print("Error in create_order:", str(e))
+    conn.rollback()
+    return None
+
+# 發送付款請求到金流 api:
+def request_payment(prime, order_data):
+  api_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
+
+  request_data = {
+    "prime": prime,
+    "partner_key": PARTNER_KEY,
+    "merchant_id": "zoetrypayment_TAISHIN",
+    "details": "One Day Tour in Taipei",
+    "amount": order_data['price'],
+    "cardholder": {
+      "phone_number": order_data['contact']['phone'],
+      "name": order_data['contact']['name'],
+      "email": order_data['contact']['email']
+    },
+    "remember": False
+  }
+
+  headers = {
+    "Content-Type": "application/json",
+    "x-api-key": PARTNER_KEY
+  }
+
+  try:
+    response = requests.post(api_url, json=request_data, headers=headers)
+    response_data = response.json()
+    print("付款 API 回應：", response_data)
+
+    if response_data.get("status") == 0:
+      return True
+    else:
+      return False
+  except requests.exceptions.RequestException as e:
+    print("發送請求失敗：", str(e))
+    return False
+
+# 修改訂單狀態為已付款
+def update_order_status(order_number):
+  try:
+    conn, cursor = getConn()
+    cursor.execute("UPDATE orders SET status = 0, message = '已付款' WHERE number = %s", (order_number, ))
+    conn.commit()
+    cursor.execute("SELECT number, status, message FROM orders WHERE number = %s", (order_number, ))
+    result = cursor.fetchone()
+    return result
+  except Exception as e:
+    print("Error in record_payment:", str(e))
+    conn.rollback()
 
 # 取得景點資料列表
 @app.route("/api/attractions", methods=['GET'])
@@ -376,6 +452,54 @@ def api_delete_booking():
 
   if delete_booking(memberId):
     return jsonify({"ok": True}), 200
+
+# 建立新的訂單，並完成付款程序
+@app.route('/api/orders', methods=['POST'])
+def api_orders():
+  try:
+    token = request.headers.get("Authorization")
+
+    if token == "null":
+      return jsonify({"error": True, "message": "未登入系統，拒絕存取"}), 403
+
+    decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
+    memberId = get_member_info(decoded_token.get('member_id'))[0]
+    bookingData = get_member_booking(memberId)
+    attractionId = bookingData[0]
+    date = bookingData[4].strftime('%Y-%m-%d')
+    time = bookingData[5]
+    price = bookingData[6]
+
+    data = request.get_json()
+    prime = data.get('prime')
+    order_data = data.get('order')
+
+    order_number, payment_status = create_order(memberId, attractionId, date, time, price)
+
+    response_data = {
+      "data": {
+        "number": order_number,
+        "payment": payment_status
+      }
+    }
+
+    if request_payment(prime, order_data):
+      result = update_order_status(order_number)
+      response_data = {
+        "data": {
+          "number": result[0],
+          "payment": {
+            "status": result[1],
+            "message": result[2]
+          }
+        }
+      }
+      return jsonify(response_data), 200
+    else:
+      return jsonify({"error": True, "message": "訂單建立失敗，輸入不正確或其他原因"}), 400
+  except Exception as e:
+    print(e)
+    return jsonify({"error": True, "message": "伺服器內部錯誤"}), 500
 
 
 app.run(host="0.0.0.0", port=3000)
