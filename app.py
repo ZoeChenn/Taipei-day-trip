@@ -391,10 +391,11 @@ def api_check_booking_status():
     if token != "null":
       decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
       memberId = get_member_info(decoded_token.get('member_id'))[0]
+      print(memberId)
       bookingData = get_member_booking(memberId)
+      print(bookingData)
 
       if bookingData is not None:
-        
         data = {
           "attraction" : {
             "id": bookingData[0],
