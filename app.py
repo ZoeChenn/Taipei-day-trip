@@ -114,7 +114,7 @@ def add_account(name, email, password):
 # 取得會員預訂資訊
 def get_member_booking(memberId):
   conn, cursor = getConn()
-  cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, booking.date, booking.time, booking.price FROM booking INNER JOIN attractions ON attraction_id = attractions.id ORDER BY member_id = %s", (memberId, ))
+  cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, booking.date, booking.time, booking.price FROM booking INNER JOIN attractions ON attraction_id = attractions.id WHERE member_id = %s", (memberId, ))
   result = cursor.fetchone()
   # dispose(cursor, conn)
   return result
@@ -391,9 +391,7 @@ def api_check_booking_status():
     if token != "null":
       decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
       memberId = get_member_info(decoded_token.get('member_id'))[0]
-      print(memberId)
       bookingData = get_member_booking(memberId)
-      print(bookingData)
 
       if bookingData is not None:
         data = {
