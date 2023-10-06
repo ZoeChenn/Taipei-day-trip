@@ -116,7 +116,7 @@ def get_member_booking(memberId):
   conn, cursor = getConn()
   cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, booking.date, booking.time, booking.price FROM booking INNER JOIN attractions ON attraction_id = attractions.id ORDER BY member_id = %s", (memberId, ))
   result = cursor.fetchone()
-  dispose(cursor, conn)
+  # dispose(cursor, conn)
   return result
 
 # 新增會員訂單
@@ -394,6 +394,7 @@ def api_check_booking_status():
       bookingData = get_member_booking(memberId)
 
       if bookingData is not None:
+        
         data = {
           "attraction" : {
             "id": bookingData[0],
