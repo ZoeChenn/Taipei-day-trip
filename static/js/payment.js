@@ -1,4 +1,4 @@
-import { apiBookingData } from '/static/booking.js';
+import { apiBookingData } from '/static/js/booking.js';
 
 TPDirect.setupSDK(137103, 'app_DIQpPqwBHRBuZWv8BaenpET2Jv8SK9uloQPDoX3YMeKGIN4siDmkaxOBv1vi', 'sandbox')
 TPDirect.card.setup({
@@ -39,7 +39,7 @@ TPDirect.card.setup({
   }
 })
 
-TPDirect.card.onUpdate(function (update) {
+TPDirect.card.onUpdate( (update) => {
   const submitButton = document.getElementById('payBtn');
   if (update.canGetPrime) {
     submitButton.removeAttribute('disabled')
@@ -110,7 +110,6 @@ $(document).on('click', '.payBtn', (e) => {
       console.log('get prime error ' + result.msg)
       return
     }
-    console.log('get prime 成功')
     sendPrimeToServer(result.card.prime, orderName, orderEmail, orderTel);
   })
 })
@@ -118,7 +117,6 @@ $(document).on('click', '.payBtn', (e) => {
 async function sendPrimeToServer(prime, orderName, orderEmail, orderTel) {
   const bookingData = await apiBookingData();
   const token = localStorage.getItem('token');
-  console.log(orderName, orderEmail, orderTel)
   const requestData = {
     prime: prime,
     order: {
@@ -151,7 +149,6 @@ async function sendPrimeToServer(prime, orderName, orderEmail, orderTel) {
   })
   .then(response => response.json())
   .then(data => {
-    console.log('Response from server:', data);
     const orderNumber = data.data.number;
     window.location.href = `/thankyou?number=${orderNumber}`;
   })

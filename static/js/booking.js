@@ -1,17 +1,4 @@
-import { checkUserLoginStatus } from '/static/modal.js';
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const { isLoggedIn, name, email } = await checkUserLoginStatus();
-
-  if (!isLoggedIn) {
-    window.location.href = '/';
-  } else {
-    const bookingData = await apiBookingData();
-    renderBookingData({ ...bookingData, name, email });
-  }
-});
-
-async function apiBookingData() {
+export async function apiBookingData() {
   const token = localStorage.getItem('token');
   try {
     const response = await fetch('/api/booking', {
@@ -33,11 +20,10 @@ async function apiBookingData() {
   }
 }
 
-export { apiBookingData };
-
-function renderBookingData(data) {
+export function renderBookingData(data) {
   const orderName = document.getElementById('nameInput');
   const orderEmail = document.getElementById('emailInput');
+  const orderTel = document.getElementById('telInput');
   const bookingContainer = document.querySelector('.booking_container');
   const bookingContainerTop = document.querySelector('.booking_container-top');
   const total = document.querySelector('.total');
@@ -47,7 +33,7 @@ function renderBookingData(data) {
     return;
   }
 
-  const { email, name, attraction, date, time, price } = data;
+  const { phone, email, name, attraction, date, time, price } = data;
   let timeShower;
 
   if (time === "morning") {
@@ -79,6 +65,7 @@ function renderBookingData(data) {
   bookingContainerTop.innerHTML = bookingContent;
   orderName.value = name;
   orderEmail.value = email;
+  orderTel.value = phone;
 
   const deleteBtn = bookingContainerTop.querySelector('.booking_deleteBtn');
   deleteBtn.addEventListener('click', () => {
@@ -106,11 +93,3 @@ async function apiDeleteBooking() {
     return false;
   }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const phoneInput = document.getElementById('telInput');
-  // 限制手機號碼只能輸入數字，且長度最多 10 碼
-  phoneInput.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
-  });
-});

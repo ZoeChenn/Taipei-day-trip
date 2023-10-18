@@ -1,9 +1,18 @@
+import { checkUserLoginStatus } from '/static/js/modal.js';
+
 let images;
 let currentImageIndex = 0;
 const currentURL = window.location.href;
 const attractionId = currentURL.match(/\/attraction\/(\d+)/)[1];
 const radioUp = document.querySelector('.radio-up')
 const radioDown = document.querySelector('.radio-down')
+const dateInput = document.querySelector('.dateSelect');
+const prevBtn = document.querySelector(".prev");
+const nextBtn = document.querySelector(".next");
+const dotsContainer = document.querySelector(".dots");
+const pictureDiv = document.querySelector(".picture");
+const bookThisSpotBtn = document.getElementById('bookThisSpot');
+const loginOrSignupBtn = document.getElementById('loginOrSignup');
 
 if (attractionId) {
   const apiUrl = `/api/attraction/${attractionId}`;
@@ -66,12 +75,6 @@ radioDown.addEventListener('click', () => {
   fee.textContent = ' 2500 ';
 })
 
-// 照片輪播部分
-const prevBtn = document.querySelector(".prev");
-const nextBtn = document.querySelector(".next");
-const dotsContainer = document.querySelector(".dots");
-const pictureDiv = document.querySelector(".picture");
-
 function updateSlide() {
   const imgSlides = document.querySelectorAll('.attraction_img');
   const containerWidth = pictureDiv.clientWidth;
@@ -121,30 +124,6 @@ dotsContainer.addEventListener("click", (e) => {
   }
 });
 
-// 動態調整 date 的最小值（避免選取今日及過去時間）
-const dateInput = document.querySelector('.dateSelect');
-
-// 取得目前日期並轉換成 YYYY-MM-DD 格式
-const today = new Date();
-const year = today.getFullYear();
-let month = today.getMonth() + 1;
-let day = today.getDate() + 1;
-
-// 若月份和日期為個位數的情況，補零
-month = month < 10 ? `0${month}` : month;
-day = day < 10 ? `0${day}` : day;
-
-// 設定 min 屬性為目前日期
-const formattedToday = `${year}-${month}-${day}`;
-dateInput.setAttribute('min', formattedToday);
-
-
-// 預定表單部分
-import { checkUserLoginStatus } from '/static/modal.js';
-
-let bookThisSpotBtn = document.getElementById('bookThisSpot');
-let loginOrSignupBtn = document.getElementById('loginOrSignup');
-
 bookThisSpotBtn.addEventListener('click', async () => {
   const isLoggedIn = await checkUserLoginStatus();
   const date = dateInput.value
@@ -159,10 +138,6 @@ bookThisSpotBtn.addEventListener('click', async () => {
     loginOrSignupBtn.onclick();
   }
   else {
-    console.log('attractionId:', attractionId);
-    console.log('Selected Date:', date);
-    console.log('Selected Time:', time);
-    console.log('Tour Fee:', tourFee);
     fetch('/api/booking', {
       method: 'POST',
       headers: {
@@ -178,9 +153,23 @@ bookThisSpotBtn.addEventListener('click', async () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data)
       window.location.href = '/booking';
     })
     .catch(error => console.error('Signup error:', error));
   }
 })
+
+// 動態調整 date 的最小值（避免選取今日及過去時間）
+// 取得目前日期並轉換成 YYYY-MM-DD 格式
+const today = new Date();
+const year = today.getFullYear();
+let month = today.getMonth() + 1;
+let day = today.getDate() + 1;
+
+// 若月份和日期為個位數的情況，補零
+month = month < 10 ? `0${month}` : month;
+day = day < 10 ? `0${day}` : day;
+
+// 設定 min 屬性為目前日期
+const formattedToday = `${year}-${month}-${day}`;
+dateInput.setAttribute('min', formattedToday);

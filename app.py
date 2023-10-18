@@ -12,8 +12,10 @@ app=Flask(
   __name__, 
   static_folder = 'static',
 )
-app.config["JSON_AS_ASCII"]=False
-app.config["TEMPLATES_AUTO_RELOAD"]=True
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["JSON_AS_ASCII"] = False
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # 載入環境變數配置文件
 load_dotenv()
@@ -29,7 +31,7 @@ PARTNER_KEY = os.getenv("PARTNER_KEY")
 # 建立並設定連接池
 pool = pooling.MySQLConnectionPool(
   pool_name = "myPool",  # 連接池名稱
-  pool_size = 10,  # 連接池大小
+  pool_size = 30,  # 連接池大小
   user = DB_USER,
   password = DB_PASSWORD,
   host = DB_HOST,
@@ -63,9 +65,9 @@ def booking():
 @app.route("/thankyou")
 def thankyou():
   return render_template("thankyou.html")
-@app.route("/test")
-def test():
-  return render_template("test.html")
+@app.route("/member")
+def member():
+  return render_template("member.html")
 
 # 完全比對捷運站名稱 or 模糊比對景點名稱的關鍵字
 def find_mrt_or_attraction(keyword, page):
@@ -116,7 +118,6 @@ def get_member_booking(memberId):
   conn, cursor = getConn()
   cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, booking.date, booking.time, booking.price FROM booking INNER JOIN attractions ON attraction_id = attractions.id WHERE member_id = %s", (memberId, ))
   result = cursor.fetchone()
-  # dispose(cursor, conn)
   return result
 
 # 新增會員訂單
@@ -147,16 +148,17 @@ def delete_booking(memberId):
   return True
 
 # 生成訂單資訊
-def create_order(memberId, attractionId, date, time, price):
+def create_order(memberId, attractionId, date, time, price, contactName, contactEmail, contactTel):
   timestamp = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
   order_number = f'{timestamp}{memberId}'
   try:
     conn, cursor = getConn()
     cursor.execute(
-      "INSERT INTO orders (number, status, message, date, time, price, attraction_id, member_id) VALUES (%s, NULL, '未付款', %s, %s, %s, %s, %s)",
-      (order_number, date, time, price, attractionId, memberId)
+      "INSERT INTO orders (number, status, message, date, time, price, attraction_id, member_id, contact_name, contact_email, contact_tel) VALUES (%s, NULL, '未付款', %s, %s, %s, %s, %s, %s, %s, %s)",
+      (order_number, date, time, price, attractionId, memberId, contactName, contactEmail, contactTel)
     )
     conn.commit()
+    dispose(cursor, conn)
     delete_booking(memberId)
     payment_status = {
       "status": None,
@@ -166,10 +168,11 @@ def create_order(memberId, attractionId, date, time, price):
   except Exception as e:
     print("Error in create_order:", str(e))
     conn.rollback()
+    dispose(cursor, conn)
     return None
 
 # 發送付款請求到金流 api:
-def request_payment(prime, order_data):
+def request_payment(prime, orderData):
   api_url = "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime"
 
   request_data = {
@@ -177,11 +180,11 @@ def request_payment(prime, order_data):
     "partner_key": PARTNER_KEY,
     "merchant_id": "zoetrypayment_TAISHIN",
     "details": "One Day Tour in Taipei",
-    "amount": order_data['price'],
+    "amount": orderData['price'],
     "cardholder": {
-      "phone_number": order_data['contact']['phone'],
-      "name": order_data['contact']['name'],
-      "email": order_data['contact']['email']
+      "phone_number": orderData['contact']['phone'],
+      "name": orderData['contact']['name'],
+      "email": orderData['contact']['email']
     },
     "remember": False
   }
@@ -216,6 +219,62 @@ def update_order_status(order_number):
   except Exception as e:
     print("Error in record_payment:", str(e))
     conn.rollback()
+
+# 獲得會員歷史訂單
+def get_member_history(memberId):
+  conn, cursor = getConn()
+  cursor.execute("SELECT attractions.id, attractions.name, attractions.address, attractions.images, orders.number, orders.date, orders.time, orders.price, orders.creation_time, orders.contact_name, orders.contact_email, orders.contact_tel FROM orders INNER JOIN attractions ON attraction_id = attractions.id WHERE member_id = %s ORDER BY orders.creation_time DESC", (memberId,))
+  results = cursor.fetchall()
+  dispose(cursor, conn)
+  return results
+
+# 彙整會員歷史訂單
+def parse_order_history(orderHistory):
+  parsed_data = []
+  for item in orderHistory:
+    attraction_images = item[3].split(',')
+    data_item = {
+      "attraction": {
+        "id": item[0],
+        "name": item[1],
+        "address": item[2],
+        "image": attraction_images[0] if attraction_images else ''
+      },
+      "number": item[4],
+      "creation_time": item[8].strftime('%Y-%m-%d %H:%M:%S'),
+      "date": item[5].strftime('%Y-%m-%d'),
+      "time": item[6],
+      "price": item[7],
+      "contact_name": item[9],
+      "contact_email": item[10],
+      "contact_tel": item[11],
+    }
+    parsed_data.append(data_item)
+  return parsed_data
+
+# 更新會員資料
+def update_member_data(memberId, name, phone, profile_url):
+  conn, cursor = getConn()
+  try:
+    cursor.execute("UPDATE member SET name = %s, phone = %s, profile_url = %s WHERE id = %s",(name, phone, profile_url, memberId,))
+    conn.commit()
+    dispose(cursor, conn)
+    return True
+  except Exception as e:
+    print("Error in update_member_data:", str(e))
+    conn.rollback()
+    dispose(cursor, conn)
+    return False
+
+# 檢查新增檔案的類型
+def allowed_file(filename):
+  return '.' in filename and \
+    filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
+# 確保圖片檔名安全
+def secure_filename(filename):
+  # 只保留英文字母、數字、底線和點，並移除其他特殊字符
+  return re.sub(r'[^\w.]', '_', filename)
 
 # 取得景點資料列表
 @app.route("/api/attractions", methods=['GET'])
@@ -376,7 +435,9 @@ def api_get_status():
     user_data = {
       "id": member_info[0],
       "name": member_info[1],
-      "email": member_info[2]
+      "email": member_info[2],
+      "phone": member_info[6],
+      "profileUrl": member_info[7]
     }
     return jsonify({"data": user_data}), 200
   else:
@@ -472,9 +533,14 @@ def api_orders():
 
     data = request.get_json()
     prime = data.get('prime')
-    order_data = data.get('order')
+    orderData = data.get('order')
+    contact = orderData.get('contact', {})
+    contactName = contact.get('name', '')
+    contactEmail = contact.get('email', '')
+    contactTel = contact.get('phone', '')
+    
 
-    order_number, payment_status = create_order(memberId, attractionId, date, time, price)
+    order_number, payment_status = create_order(memberId, attractionId, date, time, price, contactName, contactEmail, contactTel)
 
     response_data = {
       "data": {
@@ -483,7 +549,7 @@ def api_orders():
       }
     }
 
-    if request_payment(prime, order_data):
+    if request_payment(prime, orderData):
       result = update_order_status(order_number)
       response_data = {
         "data": {
@@ -501,5 +567,63 @@ def api_orders():
     print(e)
     return jsonify({"error": True, "message": "伺服器內部錯誤"}), 500
 
+# 取得會員的歷史訂單
+@app.route("/api/user/history", methods=["GET"])
+def api_get_order_history():
+  try:
+    token = request.headers.get("Authorization")
+
+    if token != "null":
+      decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
+      memberId = get_member_info(decoded_token.get('member_id'))[0]
+      orderHistory = get_member_history(memberId)
+
+      if orderHistory:
+        parsed_order_history = parse_order_history(orderHistory)
+        return jsonify({"data": parsed_order_history}), 200
+      else:
+        return jsonify({"data": None}), 200
+  except jwt.ExpiredSignatureError:
+    return jsonify({"error": True, "message": "未登入系統，拒絕存取"}), 403
+
+# 更新會員資料
+@app.route("/api/user/member", methods=["POST"])
+def api_update_member_data():
+  try:
+    token = request.headers.get("Authorization")
+
+    if token != "null":
+      decoded_token = jwt.decode(token, "secretKey", algorithms=["HS256"])
+      memberId = get_member_info(decoded_token.get('member_id'))[0]
+
+      name = request.form.get('name')
+      phone = request.form.get('phone')
+      image_file = request.files['croppedImage']
+
+      if allowed_file(image_file.filename):
+        filename = secure_filename(image_file.filename)
+        image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        profile_url = f"{request.url_root}uploads/{filename}"
+
+        if update_member_data(memberId, name, phone, profile_url):
+          present_member_info = get_member_info(memberId)
+          member_data = {
+            "id": present_member_info[0],
+            "name": present_member_info[1],
+            "email": present_member_info[2],
+            "phone": present_member_info[6],
+            "profile_url": present_member_info[7]
+          }
+          return jsonify(member_data), 200
+      else:
+        return jsonify({"error": True, "message": "Invalid file type"}), 400
+  except Exception as e:
+    print("Error in api_update_member_data:", str(e))
+    return jsonify({"error": True, "message": "Server error"}), 500
+
+# 新增路由來提供圖片的存取
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+  return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 app.run(host="0.0.0.0", port=3000)

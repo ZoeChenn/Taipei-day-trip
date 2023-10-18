@@ -908,4 +908,165 @@ hr {
 
 .pulse-bubble-3 {
   animation: pulse 0.4s ease 0.4s infinite alternate;
+}
+
+.member_container {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #666666;
+  padding-top: 95px;
+}
+.member_container h2 {
+  font-size: 19px;
+  font-weight: 700;
+}
+.member_container .member_container-top {
+  display: flex;
+  gap: 50px;
+  padding: 0 110px 0 110px;
+}
+@media (max-width: 1200px) {
+  .member_container .member_container-top {
+    padding: 0 70px 0 70px;
+  }
+}
+@media (max-width: 900px) {
+  .member_container .member_container-top {
+    padding: 0 40px 0 40px;
+  }
+}
+@media (max-width: 600px) {
+  .member_container .member_container-top {
+    padding: 0 10px 0 10px;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.member_container .member_container-top .member_profilePic, .member_container .member_container-top img {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  border-radius: 50%;
+}
+.member_container .member_container-top .member_profilePic .editIcon, .member_container .member_container-top img .editIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  z-index: 2;
+  right: 10px;
+  bottom: 10px;
+  position: absolute;
+  background: url(/static/image/edit-icon.svg) center no-repeat #fff;
+  cursor: pointer;
+}
+.member_container .member_container-top .member_profile h2 {
+  margin-bottom: 30px;
+}
+.member_container .member_container-top .member_profile input {
+  font-size: 16px;
+  font-weight: 500;
+  padding: 10px;
+  border: 1px solid #E8E8E8;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  outline-color: #448899;
+}
+.member_container .member_container-top .member_profile .updateMessage {
+  padding: 5px;
+  text-align: center;
+  color: red;
+}
+.member_container .member_container-top .saveProfileBtn {
+  width: 60px;
+  height: 30px;
+  border: none;
+  font-size: 16px;
+  font-weight: 400;
+  border-radius: 5px;
+  padding: 4px 8px;
+  color: #FFFFFF;
+  background-color: #448899;
+}
+.member_container .member_container-top .saveProfileBtn:hover {
+  cursor: pointer;
+  background-color: #346976;
+}
+.member_container .member_container-top .saveProfileBtn:disabled {
+  cursor: no-drop;
+  background-color: #666666;
+}
+.member_container .member_container-bottom {
+  padding: 0 110px;
+}
+@media (max-width: 1200px) {
+  .member_container .member_container-bottom {
+    padding: 0 70px 0 70px;
+  }
+}
+@media (max-width: 900px) {
+  .member_container .member_container-bottom {
+    padding: 0 40px 0 40px;
+  }
+}
+@media (max-width: 600px) {
+  .member_container .member_container-bottom {
+    padding: 0 10px 0 10px;
+  }
+}
+.member_container .member_container-bottom .warp {
+  padding-top: 30px;
+  display: flex;
+}
+@media (max-width: 900px) {
+  .member_container .member_container-bottom .warp {
+    flex-direction: column;
+    align-items: start;
+  }
+}
+.member_container .member_container-bottom .warp .historyOrder_picture {
+  width: 30%;
+  height: 200px;
+  margin-right: 22px;
+}
+.member_container .member_container-bottom .warp .historyOrder_picture .pictureUrl {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+@media (max-width: 900px) {
+  .member_container .member_container-bottom .warp .historyOrder_picture {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 7px;
+  }
+}
+.member_container .member_container-bottom .warp .historyOrder_detail {
+  width: 70%;
+  display: flex;
+}
+@media (max-width: 900px) {
+  .member_container .member_container-bottom .warp .historyOrder_detail {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+@media (max-width: 600px) {
+  .member_container .member_container-bottom .warp .historyOrder_detail {
+    display: block;
+  }
+}
+.member_container .member_container-bottom .warp .historyOrder_detail .historyOrder_title, .member_container .member_container-bottom .warp .historyOrder_detail .historyOrder_contact {
+  width: 50%;
+}
+@media (max-width: 600px) {
+  .member_container .member_container-bottom .warp .historyOrder_detail .historyOrder_title, .member_container .member_container-bottom .warp .historyOrder_detail .historyOrder_contact {
+    width: 100%;
+  }
+}
+.member_container .member_container-bottom .warp .historyOrder_detail .historyOrder_title h3, .member_container .member_container-bottom .warp .historyOrder_detail .historyOrder_contact h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: inline-block;
 }/*# sourceMappingURL=all.css.map */

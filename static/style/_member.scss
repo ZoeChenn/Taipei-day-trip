@@ -1,0 +1,139 @@
+.member_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    color: $color-secondary;
+    padding-top: 95px;
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+    }
+    .member_container-top {
+      display: flex;
+      gap: 50px;
+      padding: 0 110px 0 110px;
+      @include desktop {
+        padding: 0 70px 0 70px;
+      }
+      @include pad {
+        padding: 0 40px 0 40px;
+      }
+      @include mobile {
+        padding: 0 10px 0 10px;
+        flex-direction: column;
+        align-items: center;
+      }
+      .member_profilePic, img {
+        width: 200px;
+        height: 200px;
+        position: relative;
+        border-radius: 50%;
+        .editIcon {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          z-index: 2;
+          right: 10px;
+          bottom: 10px;
+          position: absolute;
+          background: url(/static/image/edit-icon.svg) center no-repeat #fff;
+          cursor: pointer;
+        }
+      }
+      .member_profile {
+        h2 {
+          margin-bottom: 30px;
+        }
+        input {
+          font-size: 16px;
+          font-weight: 500;
+          padding: 10px;
+          border: 1px solid $color-border;
+          border-radius: 5px;
+          margin-bottom: 15px;
+          outline-color: $color-primary;
+        }
+        .updateMessage {
+          padding: 5px;
+          text-align: center;
+          color: red;
+        }
+      }
+      .saveProfileBtn {
+        width: 60px;
+        height: 30px;
+        border: none;
+        font-size: 16px;
+        font-weight: 400;
+        border-radius: 5px;
+        padding: 4px 8px;
+        color: $color-white;
+        background-color: $color-primary;
+        &:hover {
+          cursor: pointer;
+          background-color: darken($color-primary, 10%);
+        }
+        &:disabled {
+          cursor: no-drop;
+          background-color: $color-secondary;
+        }
+      }
+    }
+    .member_container-bottom {
+      padding: 0 110px;
+      @include desktop {
+        padding: 0 70px 0 70px;
+      }
+      @include pad {
+        padding: 0 40px 0 40px;
+      }
+      @include mobile {
+        padding: 0 10px 0 10px;
+      }
+      .warp {
+        padding-top: 30px;
+        display: flex;
+        @include pad {
+          flex-direction: column;
+          align-items: start;
+        }
+        .historyOrder_picture {
+          width: 30%;
+          height: 200px;
+          margin-right: 22px;
+          .pictureUrl {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          @include pad {
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 7px;
+          }
+        }
+        .historyOrder_detail {
+          width: 70%;
+          display: flex;
+          @include pad {
+            width: 100%;
+            justify-content: space-between;
+          }
+          @include mobile {
+            display: block;
+          }
+          .historyOrder_title, .historyOrder_contact {
+            width: 50%;
+            @include mobile {
+              width: 100%;
+            }
+            h3 {
+              font-size: 16px;
+              font-weight: 700;
+              margin-bottom: 10px;
+              display: inline-block;
+            }
+          }
+        }
+      }
+    }
+  }

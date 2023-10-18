@@ -16,11 +16,11 @@ const scrollOffset = 800;
 fetch('/api/mrts')
 .then(response => response.json())
 .then(data => {
-    mrtData = data.data
-    renderMrt(mrtData);
+  mrtData = data.data
+  renderMrt(mrtData);
 })
 .catch(function(error){
-    console.log("發生錯誤" + error);
+  console.log("發生錯誤" + error);
 });
 
 // 觀測器
@@ -36,8 +36,6 @@ const observer = new IntersectionObserver(async (entries) => {
       isLoading = true;
       if (!keyword) {
         if (nextPage !== null) {
-          // console.log('有進入')
-          // console.log(nextPage)
           await homeDataAPI(nextPage);
         } else {
           return
@@ -66,7 +64,6 @@ function homeDataAPI(page) {
     .then(data => {
         allData = data.data;
         nextPage = data.nextPage;
-        // console.log('homeAPI:',nextPage)
         renderData(allData);
     })
     .catch(function(error){
@@ -199,7 +196,6 @@ mrtBtnRight.addEventListener('click', () => {
   });
 });
 
-
 // 輸入關鍵字查詢
 searchButton.addEventListener('click', () => {
   nextPage = 0;
@@ -211,7 +207,6 @@ searchButton.addEventListener('click', () => {
   contentCards.innerHTML = '';
   searchDataAPI(nextPage, keyword)
 });
-
 
 // 單一景點 API
 function attractionDataAPI(id) {

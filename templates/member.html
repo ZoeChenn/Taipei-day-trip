@@ -25,60 +25,28 @@
       <div class="pulse-bubble pulse-bubble-3"></div>
     </div>
   </div>
-  <main class="booking_container">
-    <div class="booking_container-top">
-      <h2>您好，，待預訂的行程如下：</h2>
-      <div class="top_warp">
-        <div class="booking_picture">
-          <img src="" alt="" class="pictureUrl">
-        </div>
-        <div class="booking_title">
-          <div class="booking_name"></div>
-          <div class="booking_detail">
-            <h3>日期：</h3><span class="date"></span>
-            <br>
-            <h3>時間：</h3><span class="time"></span>
-            <br>
-            <h3>費用：</h3><span class="price"></span>
-            <br>
-            <h3>地點：</h3><span class="address"></span>
-          </div>
-        </div>
-        <span class="booking_deleteBtn"></span>
+  <main class="member_container">
+    <div class="member_container-top">
+      <div class="member_profilePic">
+        <img class="profileUrl" id="profileUrl" src="/static/image/profile.png" alt="" >
+        <label for="fileInput" class="editIcon" id="editIcon"></label>
+        <input type="file" id="fileInput" style="display: none" accept="image/jpg, image/jpeg, image/png">
+      </div>
+      <div class="member_profile">
+        <h2>基本資料</h2>
+        <label for="member_name">姓名：</label><input id="nameInput" type="text" >
+        <br>
+        <label for="member_tel">電話：</label><input id="telInput" maxlength="10" >
+        <br>
+        <div id="updateMessage" class="updateMessage"></div>
+        <button type="submit" id="saveProfileBtn" class="saveProfileBtn" >儲存</button>
       </div>
     </div>
     <hr>
-    <div class="booking_container-middle">
-      <h2>您的聯絡資訊</h2>
-      <label for="order_name">聯絡姓名：</label><input id="nameInput" type="text" required>
-      <br>
-      <label for="order_email">連絡信箱：</label><input id="emailInput" type="email" required>
-      <br>
-      <label for="order_tel">手機號碼：</label><input id="telInput" maxlength="10" required>
-      <p>請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
-    </div>
-    <hr>
-    <div class="booking_container-bottom">
-      <h2>信用卡付款資訊</h2>
-      <form>
-        <div class="form-group">
-          <label for="card-number" class="control-label">卡片號碼：</label>
-          <div class="tpfield" id="card-number"></div>
-        </div>
-        <div class="form-group">
-          <label for="card-expiration-date" class="control-label">過期時間：</label>
-          <div class="tpfield" id="card-expiration-date"></div>
-        </div>
-        <div class="form-group">
-          <label for="card-ccv" class="control-label">驗證密碼：</label>
-          <div class="tpfield" id="card-ccv"></div>
-        </div>
-      </form>
-    </div>
-    <hr>
-    <div class="booking_container-payment">
-      <h3>總價：新台幣 <span class="total"></span> 元</h3>
-      <button type="submit" id="payBtn" class="payBtn" >確認訂購並付款</button>
+    <div class="member_container-bottom">
+      <h2>歷史訂單列表</h2>
+      <div class="historyOrderList">
+      </div>
     </div>
   </main>
   <footer>
@@ -123,10 +91,21 @@
       </div>
     </div>
   </div>
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.17.0"></script>
+  <!-- 圖片編輯器 -->
+  <div id="editImageModal" class="Modal">
+    <div class="border-box">
+      <div class="modal-content">
+        <span id="editImageClose" class="close"></span>
+        <h2>編輯圖片</h2>
+        <div id="croppieContainer"></div>
+        <button id="confirmCropBtn">確認</button>
+      </div>
+    </div>
+  </div>
   <script src="/static/js/modal.js" type="module"></script>
-  <script src="/static/js/booking.js" type="module"></script>
-  <script src="/static/js/payment.js" type="module"></script>
+  <script src="/static/js/editProfilePic.js" type="module"></script>
+  <script src="/static/js/member.js" type="module"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.css" rel="stylesheet"></link>
 </body>
 </html>
